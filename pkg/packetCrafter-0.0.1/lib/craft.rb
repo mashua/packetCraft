@@ -2,50 +2,58 @@ require 'yaml'
 require_relative 'utils'
 require_relative 'CCSDS_203.0-B-2'
 
-#Telecommand packet structure
-#Packet Header
- 	
-#PacketHeader, total reprsize is 48bits, ALL reprsizeS IN BITS
-PCKT_HEADER_SZ = 48;
-	#Packet ID
-PCKT_ID_SZ = 16;
-PCKT_VER_NUM_SZ = 3;
-PCKT_TYPE_SZ = 1;
-PCKT_DFHF_SZ = 1;	#packet DATA FIELD HEADER FLAG
-PCKT_APID_SZ = 11; 
-	#Packet Sequence control
-PCKT_SEQ_FL_SZ = 2;
-PCKT_SEQ_CNT_SZ = 14;
-	#Packet Length
-PCKT_LGTH_SZ = 16;	#this is number of octets contained in
-					#packet data field
+#pck_hdr_seg = CreatePacketSegment(3,1) #reprsize 48 bits
+#	pck_id_seg = CreatePacketSegment(4,2);
+#  pck_seq_ctrl_seg = CreatePacketSegment(2,2);
+#	pck_length_seg = CreatePacketSegment(1,1);
 
-#reprsizeS DEFINITIONS
-#Packet Data Field, variable reprsize
-PCKT_DFH_SZ = rand(50)
-PCKT_APPDT_SZ = rand(2500) 
-PCKT_SPR_SZ = rand(50)
-PCKT_PERCTL_SZ = 16	
-	#Packet Data Field Header
-CCSDS_SEC_HDR_FLG_SZ = 1;
-TC_PCK_PUS_VER_NUM_SZ = 3;
-ACK_SZ = 4;
-SRVC_TYPE_SZ = 8;
-SRVC_STYPE_SZ = 8;
-SRC_ID_SZ = 3
-SPARE_SZ =  1 #reprsize TO PADD THE MESSAGE TO ARCHITECTURE SPECIFIC reprsize, optional
+$packetArray = Array.new(2);
+$tempArrayRef = $packetArray;
+$pos=0;
 
+#A block that takes a Hash and does the appropriate handling.
+$gatherBlock = Proc.new{ |theHash|
+  
+  theHash.each{ |key, value|
+    if key=="name"      
+  #    $packetArray.push( Array.new() );
+      $tempArrayRef[$pos] = theHash['name']; #put the name of the packet segment in the first position, just for reference
+      $pos=$pos+1;
+  #    $packetArray.push( Array.new( $telecmdpacket[key].size ));
+    elsif key == "has" #it's an array of hashes
+      print $tempArrayRef;
+      
+      $tempArrayRef[$pos] = Array.new( theHash[key].size );
+      $tempArrayRef = $tempArrayRef[$pos];
+      
+      print $tempArrayRef;
+      
+      $pos=0;
+      theHash['has'].each { |tempinnerhash|  
+        $gatherBlock.call( tempinnerhash );       
+      }
+    end
+  }
+};
 
-
-#Each packet segment will be at first an array of arrays.
-#The inner arrays in most cases will be two dimensional as they will contain the value and the bit numbers that represent this length.
-# => All elements of the packet will be in the format { {<bitvalues>}, {<padreprsize>} }
-# =>                                                  { {1}, {0001}} #for a pad reprsize o 4 bits.
-
-pck_hdr_seg = CreatePacketSegment(3,1) #reprsize 48 bits
-	pck_id_seg = CreatePacketSegment(4,2);
-  pck_seq_ctrl_seg = CreatePacketSegment(2,2);
-	pck_length_seg = CreatePacketSegment(1,1);
+$gatherBlock.call( $telecmdpacket );
+pos=pos+1;
+#    for temp in (1..$telecmdpacket[key].size) do
+##      $packetArray[pos][temp] = 
+#    end
+    
+#    $packetArray[pos][]
+    
+    for temp in $packetArray[pos] do
+      print temp;
+    end
+    
+    $packetArray[pos].each { |x|  #first array of arrays
+        print "#{x}\n" ;
+#        print "#{$packetArray[pos][x]}\n"
+      
+      }
+  
 
 pck_id_seg.each { |ar|
   ar[0]=2; #version number
@@ -59,92 +67,9 @@ pck_id_seg.each { |elem|
   printf("%0#{elem[1]}b\n", elem[0]);
   
 }
+#print $telecmdpacket;
 
-telecmdpacket = { 'name' => 'TelecommandWholePacket',
-                  'reprsize' => 65535,
-                  'has' => [ {  'name'  => 'PacketHeader',
-                                'reprsize'  => 48,
-                                'has'   =>[ { 'name' => 'PacketID',
-                                              'reprsize' => 16,
-                                              'has'  => [ { 'name' => 'VersionNumber',
-                                                            'reprsize' => 3,
-                                                            'defval' => 0
-                                                          },
-                                                          { 'name' => 'Type',
-                                                            'reprsize' => 1,
-                                                            'defval' => 1
-                                                          },
-                                                          { 'name' => 'DataFieldHeaderFlag',
-                                                            'reprsize' => 1,
-                                                            'defval' => 1
-                                                          },
-                                                          { 'name' => 'ApplicationProcessID',
-                                                            'reprsize' => 11,
-                                                            'defval' => 5
-                                                          }
-                                                        ]
-                                            },
-                                            { 'name'  => 'PacketSequenceControl',
-                                              'reprsize'  => 48,
-                                              'has' => [ {  'name' => 'SequenceFlags',
-                                                            'reprsize' => 2,
-                                                            'defval' => 11 #stand-alone packet
-                                                          },
-                                                          { 'name' => 'SequenceCount',
-                                                            'reprsize' => 14,
-                                                            'defval' => 1 #packet sequence number
-                                                          }                                                
-                                                       ]
-                                            },
-                                            { 'name'  => 'PacketLenght',
-                                              'reprsize'  => 16,
-                                              'defval' => 65542
-                                            }
-                                          ]
-                              }, 
-                              { 'name'  => 'PacketDataField',
-                                'reprsize'  => 33,
-                                'has'   =>[ { 'name' => 'DataFieldHeader',
-                                              'reprsize' => 24+SRC_ID_SZ+SPARE_SZ,
-                                              'has'  => [ { 'name' => 'CCSDSSecondaryHeaderFlag',
-                                                            'reprsize' => 1,
-                                                            'defval' => 0 #non-CCSDS secondary header
-                                                          },
-                                                          { 'name' => 'TC Packet PUS Version Number',
-                                                            'reprsize' => 3,
-                                                            'defval' => 1
-                                                          },
-                                                          { 'name' => 'Ack',
-                                                            'reprsize' => 4,
-                                                            'defval' => 0xb1111 #see note on page: 45
-                                                          },
-                                                          { 'name' => 'Service Type', #which service this telecommand is related
-                                                            'reprsize' => 8,
-                                                            'defval' => 255
-                                                          },
-                                                          { 'name' => 'Service Subtype',
-                                                            'reprsize' => 8,
-                                                            'defval' => 255
-                                                          },
-                                                          { 'name' => 'SourceID',
-                                                            'reprsize' => SRC_ID_SZ, #rand(50) needs 6 bits
-                                                            'defval' => 5
-                                                          },
-                                                          { 'name' => 'Spare',
-                                                            'reprsize' => SPARE_SZ,
-                                                            'defval' => 0
-                                                          }
-                                                         ]
-                                            },
-                                            { 'name' => 'ApplicationData',
-                                              'reprsize' => 12,
-                                              'defval' => PCKT_APPDT_SZ
-                                            }
-                                          ]
-                              }
-                            ]
-}
-print telecmdpacket['has'][0]['has'][0]['has'][3]['reprsize']
+#print $telecmdpacket['has'][0]['has'][0].size
 #s = pck_id_ar.pack("b#{pck_id_ar.length}");
 
 #print s.reprsize;

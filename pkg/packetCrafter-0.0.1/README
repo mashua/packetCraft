@@ -1,3 +1,3 @@
 == packetCrafter
-
-You should document your project here.
+This little tool intends to help people who develops applications and are in need for various packet creation schemes.
+Currently the packet schemes that are supported are packets as they are specified in the CCSDS 203.0-B-2, published from The Consultative Committee for Space Data Systems (CCSDS) (for more info look in: http://public.ccsds.org/).

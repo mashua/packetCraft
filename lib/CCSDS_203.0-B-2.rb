@@ -36,14 +36,14 @@ SPARE_SZ =  1 #reprsize TO PADD THE MESSAGE TO ARCHITECTURE SPECIFIC reprsize, o
 
 #Telecommand packet structure in YAML
 $telecmdpacket = {'name' => 'TelecommandWholePacket',
-                  'reprsize' => 65535,
+#                  'reprsize' => 65542, #page: 44, max packet octets
                   'has' => [ {  'name'  => 'PacketHeader',
-                                'reprsize'  => 48,
+#                                'reprsize'  => 48,
                                 'has'   =>[ { 'name' => 'PacketID',
-                                              'reprsize' => 16,
+#                                              'reprsize' => 16,
                                               'has'  => [ { 'name' => 'VersionNumber',
                                                             'reprsize' => 3,
-                                                            'defval' => 0
+                                                            'defval' => 2
                                                           },
                                                           { 'name' => 'Type',
                                                             'reprsize' => 1,
@@ -60,7 +60,7 @@ $telecmdpacket = {'name' => 'TelecommandWholePacket',
                                                         ]
                                             },
                                             { 'name'  => 'PacketSequenceControl',
-                                              'reprsize'  => 48,
+#                                              'reprsize'  => 16,
                                               'has' => [ {  'name' => 'SequenceFlags',
                                                             'reprsize' => 2,
                                                             'defval' => 11 #stand-alone packet
@@ -73,14 +73,14 @@ $telecmdpacket = {'name' => 'TelecommandWholePacket',
                                             },
                                             { 'name'  => 'PacketLenght',
                                               'reprsize'  => 16,
-                                              'defval' => 65542
+                                              'defval' => 512
                                             }
                                           ]
                               }, 
                               { 'name'  => 'PacketDataField',
-                                'reprsize'  => 33,
+#                                'reprsize'  => 33,
                                 'has'   =>[ { 'name' => 'DataFieldHeader',
-                                              'reprsize' => 24+SRC_ID_SZ+SPARE_SZ,
+#                                              'reprsize' => 24+SRC_ID_SZ+SPARE_SZ,
                                               'has'  => [ { 'name' => 'CCSDSSecondaryHeaderFlag',
                                                             'reprsize' => 1,
                                                             'defval' => 0 #non-CCSDS secondary header
@@ -121,7 +121,7 @@ $telecmdpacket = {'name' => 'TelecommandWholePacket',
                                             },
                                             { 'name' => 'PacketErrorControl', #used for padding, see page: 45
                                               'reprsize' => PCKT_PERCTL_SZ,
-                                              'defval' => 0xb10101001
+                                              'defval' => 3
                                             }
                                           ]
                               }

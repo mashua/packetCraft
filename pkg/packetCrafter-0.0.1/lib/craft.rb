@@ -1,42 +1,50 @@
 require 'yaml'
+require "serialport"
+
 require_relative 'utils'
 require_relative 'CCSDS_203.0-B-2'
 
-#pck_hdr_seg = CreatePacketSegment(3,1) #reprsize 48 bits
-#	pck_id_seg = CreatePacketSegment(4,2);
-#  pck_seq_ctrl_seg = CreatePacketSegment(2,2);
-#	pck_length_seg = CreatePacketSegment(1,1);
-
-$packetArray = Array.new(2);
-$tempArrayRef = $packetArray;
+$thePacketArray = Array.new();
 $pos=0;
 
-#A block that takes a Hash and does the appropriate handling.
-$gatherBlock = Proc.new{ |theHash|
-  
+$crosspacketBlock = Proc.new{ |theHash|
+
   theHash.each{ |key, value|
-    if key=="name"      
-  #    $packetArray.push( Array.new() );
-      $tempArrayRef[$pos] = theHash['name']; #put the name of the packet segment in the first position, just for reference
-      $pos=$pos+1;
-  #    $packetArray.push( Array.new( $telecmdpacket[key].size ));
-    elsif key == "has" #it's an array of hashes
-      print $tempArrayRef;
-      
-      $tempArrayRef[$pos] = Array.new( theHash[key].size );
-      $tempArrayRef = $tempArrayRef[$pos];
-      
-      print $tempArrayRef;
-      
-      $pos=0;
-      theHash['has'].each { |tempinnerhash|  
-        $gatherBlock.call( tempinnerhash );       
+    if key == "has"  #then we have reached the bottom of the structure.
+      value.each { |innerhash| #value is an array, the element is a hash.
+        
+        $crosspacketBlock.call( innerhash );
       }
+    elsif key != "name" #no key named has, so parse the repsize and defval into the array.
+
+      $thePacketArray[$pos] = sprintf("%0#{theHash['reprsize']}b", theHash['defval']);
+      $pos+=1;
+      break; #don't ask why, just break
     end
   }
 };
 
-$gatherBlock.call( $telecmdpacket );
+#r = 505.to_s(2);
+
+#ara << printf(ara,"%b",505);
+
+#print r;
+#print r.class;
+#printf("%b", 50);
+
+      
+$crosspacketBlock.call( $telecmdpacket );
+#print $tempArrayRef;
+#print $thePacketArray.pack("B*");
+
+print "\n";
+$thePacketArray.each { |elem|
+  
+  print elem.class
+  printf("element #{elem} is in binary: %b\n",elem.to_s());
+  
+}
+
 pos=pos+1;
 #    for temp in (1..$telecmdpacket[key].size) do
 ##      $packetArray[pos][temp] = 

@@ -5,6 +5,7 @@ require_relative 'utils'
 require_relative 'CCSDS_203.0-B-2'
 
 $thePacketArray = Array.new();
+$serialPort = SerialPort.new("/dev/ttyUSB0", 9600, 8, 1, SerialPort::NONE);
 $pos=0;
 
 $crosspacketBlock = Proc.new{ |theHash|
@@ -16,7 +17,7 @@ $crosspacketBlock = Proc.new{ |theHash|
         $crosspacketBlock.call( innerhash );
       }
     elsif key != "name" #no key named has, so parse the repsize and defval into the array.
-
+      
       $thePacketArray[$pos] = sprintf("%0#{theHash['reprsize']}b", theHash['defval']);
       $pos+=1;
       break; #don't ask why, just break
@@ -31,62 +32,68 @@ $crosspacketBlock = Proc.new{ |theHash|
 #print r;
 #print r.class;
 #printf("%b", 50);
-
       
 $crosspacketBlock.call( $telecmdpacket );
+
+#test = Array.new( [0b111, 0b001] );
+#
+#print test;
+#print "\n";
+#print test[0].class; 
+
 #print $tempArrayRef;
 #print $thePacketArray.pack("B*");
+print $thePacketArray;
+
+$thePacketBinArray = Array.new();
 
 print "\n";
+print "\n";
 $thePacketArray.each { |elem|
-  
-  print elem.class
-  printf("element #{elem} is in binary: %b\n",elem.to_s());
-  
+  elem.chars { |bit| #each element its a string bit array
+    
+#    print bit
+    $thePacketBinArray.push( bit.to_i );
+  }
 }
+    print "\n";
+    print $thePacketBinArray;
+    print "\n";
+    print $thePacketBinArray.length;
+    print "\n";
+    
+    $thePacketBinArray.each { |gg|
+      
+      print gg.class;
+      
+    } 
+    print "\n";
+    print $thePacketBinArray.pack("C*");
+    
+    $serialPort.write( $thePacketBinArray.pack("C*") );
 
+
+
+#$serialPort.write( a );
+#$serialPort.write( "\n\r" );
+
+
+print $thePacketBinArray;
+print "\nLength is : #{$thePacketBinArray.length}\n";
+
+#puts $thePacketBinArray.pack("C*");
+
+#puts $thePacketBinArray.length;
+$serialPort.write( $thePacketBinArray );
+
+$serialPort.write( $thePacketBinArray.pack("i*" ) );
+$serialPort.write "#{$thePacketBinArray.length}\n\r"
 pos=pos+1;
 #    for temp in (1..$telecmdpacket[key].size) do
 ##      $packetArray[pos][temp] = 
 #    end
     
 #    $packetArray[pos][]
-    
-    for temp in $packetArray[pos] do
-      print temp;
-    end
-    
-    $packetArray[pos].each { |x|  #first array of arrays
-        print "#{x}\n" ;
-#        print "#{$packetArray[pos][x]}\n"
-      
-      }
-  
-
-pck_id_seg.each { |ar|
-  ar[0]=2; #version number
-  ar[1]=PCKT_VER_NUM_SZ #version number bits reprsize
-}
-
-print pck_id_seg.length;
-print pck_id_seg;
-
-pck_id_seg.each { |elem| 
-  printf("%0#{elem[1]}b\n", elem[0]);
-  
-}
-#print $telecmdpacket;
-
-#print $telecmdpacket['has'][0]['has'][0].size
-#s = pck_id_ar.pack("b#{pck_id_ar.length}");
-
-#print s.reprsize;
-
-#create the packet sequence control
-  pck_seq_ctrl_seg.push( rand(0..3).to_s(2), rand(0..100).to_s(2) );
-
-#create the packet length
-	pck_length_seg.push( 65536.to_s(2) );	
 
 pck_hdr_seg.push( pck_id_seg.pack("b3b3b3b3"));
 pck_hdr_seg.push( pck_seq_ctrl_seg.pack("b3b3"));

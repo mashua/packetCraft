@@ -26,9 +26,9 @@ end
 def PrintBasicMenu()
   
   printf("\nThe following commands are supported:\n");
-  printf("--1.  See the contents of the messages in Bit String format\n");
-  printf("--2.  See the contents of the messages in String format\n");
-  printf("--3.  See the contents of the messages in \n");
+  printf("--1.  See the contents of the messages in Integer Array format (bit segments as integer elements)\n");
+  printf("--2.  See the contents of the messages in Bit String format\n");
+  printf("--3.  See the contents of the messages in Hash data structure format (not very usefull)\n");
   printf("--4.  Transmit the contents of the messages in Serial Line\n");
   printf("Q|q.  To exit program\n");
   printf("type your command input\n");
@@ -48,27 +48,70 @@ def ParseMainInput(input)
 #    print("\n1");
     _implCommand1();
   elsif input.to_i ==2  
-    print("\n2");
+#    print("\n2");
+    _implCommand2();
   elsif input.to_i ==3  
-    print("\n3");
+#    print("\n3");
+    _implCommand3();
   elsif input.to_i ==4
     print("\n4");
   elsif input == "\n"
     print("\nType a supported command\n");
     PrintBasicMenu();
   else
-    printf("\nQuiting\n");
+    printf("\nTerminated (0)\n");
+    exit(0);
   end
 end
 
+def ParseInnerArrayInput( input, array )
+  if input == "\n"
+    print array;
+  else
+    print array[(input.to_i)-1];
+  end
+end
+
+#Integer Array format
 def _implCommand1()
   
   printf("\n");
-  printf("You have loaded#{$indPacketsBinStrArray.size} packets.\n ");
+  printf("You have loaded #{$indPacketsBinArray.size} packets.\n ");
+  printf("To see an individual packet type from: 1 to #{$indPacketsBinArray.size}, or press 'enter' to see them all.\n")
   
-  
-  print $indPacketsBinStrArray;
+  inp=gets;
+  ParseInnerArrayInput(inp, $indPacketsBinArray );
   
   print("\n");
   
 end
+
+private
+def _implCommand2()
+  
+  printf("\n");
+  printf("You have loaded #{$indPacketsBinStrArray.size} packets.\n ");
+  printf("To see an individual packet type from: 1 to #{$indPacketsBinStrArray.size}, or press 'enter' to see them all.\n")
+  
+  inp=gets;
+  ParseInnerArrayInput(inp, $indPacketsBinStrArray );
+  
+  print("\n");
+  
+end
+
+def _implCommand3()
+  
+  printf("\n");
+  printf("You have loaded #{$indPacketsStrArray.size} packets.\n ");
+  printf("To see an individual packet type from: 1 to #{$indPacketsStrArray.size}, or press 'enter' to see them all.\n")
+  
+  inp=gets;
+  ParseInnerArrayInput(inp, $indPacketsStrArray );
+  
+  print("\n");
+  
+end
+
+#$indPacketsBinArray
+#$indPacketsStrArray

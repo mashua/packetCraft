@@ -26,12 +26,11 @@ $totalPacketsBinStrArray = Array.new();
 #packets binary representation in one sequence, like: 01001
 $totalPacketsBinArray = Array.new();
 
-begin 
-
+begin
   $serialPort = SerialPort.new("/dev/ttyUSB0", 9600, 8, 1, SerialPort::NONE);
-
 rescue
-  print("Serial port error!continuing...\n");
+  $serialPort= nil;
+  print("Serial port non-availiable, error! continuing without serial transmition support\n");
 end
 
 $pos=0;

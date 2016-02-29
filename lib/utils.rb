@@ -29,7 +29,8 @@ def PrintBasicMenu()
   printf("--1.  See the contents of the messages in Integer Array format (bit segments as integer elements)\n");
   printf("--2.  See the contents of the messages in Bit String format\n");
   printf("--3.  See the contents of the messages in Hash data structure format (not very usefull)\n");
-  printf("--4.  Transmit the contents of the messages in Serial Line\n");
+  printf("--4.  See the contents of the messages in raw binary format (vary per terminal)\n");
+  printf("--5.  Transmit the contents of the messages in Serial Line\n");
   printf("Q|q.  To exit program\n");
   printf("type your command input\n");
   
@@ -54,7 +55,11 @@ def ParseMainInput(input)
 #    print("\n3");
     _implCommand3();
   elsif input.to_i ==4
-    print("\n4");
+#    print("\n4");
+    _implCommand4();
+  elsif input.to_i ==5
+#    print("\n4");
+    _implCommand5();
   elsif input == "\n"
     print("\nType a supported command\n");
     PrintBasicMenu();
@@ -69,6 +74,34 @@ def ParseInnerArrayInput( input, array )
     print array;
   else
     print array[(input.to_i)-1];
+  end
+end
+
+def PrintRawBin( input, array )
+  if input == "\n"
+    
+    array.each{ |elem|
+      print elem.pack("C*");
+    }
+  else
+    print array[(input.to_i)-1].pack("C*");
+  end
+end
+
+def SerialTxRawBin( input, array, line )
+  if line == nil
+    printf("\nNo serial port found, cannot transmit data.\n");
+    return;
+#    $serialPort.write( $totalPacketsBinArray.pack("C*") );
+  end
+  if input == "\n"
+    array.each{ |elem|
+#      print elem.pack("C*");
+      $serialPort.write( elem.pack("C*") );
+    }
+  else
+#    print array[(input.to_i)-1].pack("C*");
+      $serialPort.write( array[(input.to_i)-1].pack("C*") );
   end
 end
 
@@ -113,5 +146,28 @@ def _implCommand3()
   
 end
 
-#$indPacketsBinArray
-#$indPacketsStrArray
+def _implCommand4()
+  
+  printf("\n");
+  printf("You have loaded #{$indPacketsBinArray.size} packets.\n ");
+  printf("To see an individual packet type from: 1 to #{$indPacketsBinArray.size}, or press 'enter' to see them all.\n")
+  
+  inp=gets;
+  PrintRawBin(inp, $indPacketsBinArray );
+  
+  print("\n");
+  
+end
+
+def _implCommand5()
+  
+  printf("\n");
+  printf("You have loaded #{$indPacketsBinArray.size} packets.\n ");
+  printf("To transmit an individual packet type from: 1 to #{$indPacketsBinArray.size}, or press 'enter' to transmit them all.\n")
+  
+  inp=gets;
+  SerialTxRawBin(inp, $indPacketsBinArray, $serialPort );
+  
+  print("\n");
+  
+end

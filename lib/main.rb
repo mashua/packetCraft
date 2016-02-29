@@ -9,6 +9,6 @@ PrintBasicMenu();
 #print $indPacketsBinArray
 
 while inp = gets
-  ParseMainInput(inp)
+  ParseMainInput(inp);
 end
 

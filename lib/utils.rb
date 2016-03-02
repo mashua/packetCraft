@@ -9,10 +9,10 @@ $serialPort
 def ClaimSerialPort( serialline )
   begin
     $serialPort = SerialPort.new(serialline, 9600, 8, 1, SerialPort::NONE);
-rescue
-  $serialPort= nil;
-  print("Serial port (or at least something emulating) is not availiable on this system,"\
-        "continuing without serial transmition support.\n");
+  rescue
+    $serialPort= nil;
+    print("Serial port (or at least something emulating) is not availiable on this system,"\
+          "continuing without serial transmition support.\n");
   end
 end
 
@@ -123,6 +123,7 @@ def SerialTxRawBin( input, array, line, bytestuff )
       }
     end
   else #tx a specific packet.
+  begin  
     if bytestuff==TRUE
       $serialPort.write( byteStuff(array[(input.to_i)-1]).pack("C*") );
 #      printf("#{array[(input.to_i)-1].pack("C*")}");
@@ -130,6 +131,9 @@ def SerialTxRawBin( input, array, line, bytestuff )
       $serialPort.write( array[(input.to_i)-1].pack("C*") );
 #      printf("#{array[(input.to_i)-1].pack("C*")}");
     end
+  rescue
+      printf("\nnon-existant packet selected");
+  end
   end
 end
 
@@ -243,7 +247,6 @@ def _implCommand4()
   
   inp=gets;
   PrintRawBin(inp, $indPacketsBinArray );
-  
   print("\n");
   
 end

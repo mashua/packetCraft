@@ -6,6 +6,7 @@ require 'yaml'
 require_relative 'utils'
 require_relative 'CCSDS_203.0-B-2'
 
+#$telecmdpackets = YLoadTelecmdPacketFFile();
 
 #holds a reference to an array who contains the individual
 #packets string representation, like: parsed yaml
@@ -25,13 +26,6 @@ $totalPacketsBinStrArray = Array.new();
 #holds a reference to an array who contains the individual
 #packets binary representation in one sequence, like: 01001
 $totalPacketsBinArray = Array.new();
-
-begin
-  $serialPort = SerialPort.new("/dev/ttyUSB0", 9600, 8, 1, SerialPort::NONE);
-rescue
-  $serialPort= nil;
-  print("Serial port non-availiable, error! continuing without serial transmition support\n");
-end
 
 $pos=0;
 $pckCount=0;
@@ -59,15 +53,9 @@ $crosspacketBlock = Proc.new{ |theHash, level|
 $telecmdpackets.each { |innerHash|
   $indPacketsBinStrArray<<Array.new();#new array to hold reference to the new binary string representation of the packet.
   $indPacketsStrArray[$pckCount] = $crosspacketBlock.call( innerHash,$pckCount );
-#    print "\n\npacket no:#{$pckCount+1} is:\n\n#{$indPacketsStrArray[$pckCount]}\n" ;
   $indPacketsBinStrArray[$pckCount].compact!;
-#    print "\nwith string binary representation of:\n #{$indPacketsBinStrArray[$pckCount]}\n" ;
   $pckCount=$pckCount+1;
 }
-
-#printf("\n---Loaded #{$pckCount} packets---\n")
-#print $totalPacketsBinStrArray
-#print "\n\n\n";
 
 #prepare the whole packet binary array
 $totalPacketsBinStrArray.each { |elem|
@@ -77,8 +65,6 @@ $totalPacketsBinStrArray.each { |elem|
 }
 
 #prepare the individual packets binary arrays
-#print $indPacketsBinStrArray;
-
 $indPacketsBinStrArray.each_with_index { |elem,index| #elem is an array with string elements,eg: "010"
  $indPacketsBinArray<<Array.new();
   elem.each { |innerArray| #each element its a bit string array
@@ -89,7 +75,6 @@ $indPacketsBinStrArray.each_with_index { |elem,index| #elem is an array with str
 }
 #print $indPacketsBinArray
 #print $totalPacketsBinArray
-
 #print $indPacketsStrArray;
 #    print "\n";
 #    print $totalPacketsBinArray;
@@ -104,13 +89,9 @@ $indPacketsBinStrArray.each_with_index { |elem,index| #elem is an array with str
 #      print "\n";
 #  
 #    }
-  
-    
 #    $serialPort.write( $totalPacketsBinArray.pack("C*") );
 #
 #$serialPort.write( $totalPacketsBinArray );
 #
 #$serialPort.write( $totalPacketsBinArray.pack("i*" ) );
 #$serialPort.write "#{$totalPacketsBinArray.length}\n\r"
-#
-#puts "ddd"

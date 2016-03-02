@@ -21,7 +21,7 @@ PCKT_LGTH_SZ = 16;	#this is number of octets contained in
 #reprsizeS DEFINITIONS
 #Packet Data Field, variable reprsize
 PCKT_DFH_SZ = rand(50)
-PCKT_APPDT_SZ = rand(2500) 
+PCKT_APPDT_SZ = rand(4091) 
 PCKT_SPR_SZ = rand(50)
 PCKT_PERCTL_SZ = 16	
 	#Packet Data Field Header
@@ -67,13 +67,13 @@ $telecmdpackets = [{'name' => 'TelecommandWholePacket1',
                                                           },
                                                           { 'name' => 'SequenceCount',
                                                             'reprsize' => 14,
-                                                            'defval' => 1 #packet sequence number
+                                                            'defval' => 126 #packet sequence number
                                                           }                                                
                                                        ]
                                             },
                                             { 'name'  => 'PacketLenght',
                                               'reprsize'  => 16,
-                                              'defval' => 512
+                                              'defval' => 125
                                             }
                                           ]
                               }, 

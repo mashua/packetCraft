@@ -1,12 +1,13 @@
+require_relative 'opts'
+#include Curses
 require_relative 'craft'
 
-#include Curses
+#ParseArguments();
+ParseOptions();
 
-ParseArguments();
+printf $serialPort;
 printf("\n---Loaded #{$pckCount} packets---\n");
 PrintBasicMenu();
-
-#print $indPacketsBinArray
 
 while inp = gets
   ParseMainInput(inp);

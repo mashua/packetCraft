@@ -4,9 +4,6 @@ FRAME_DEL_B_A = Array.[](0,1,1,1,1,1,1,0)
 FRAME_ESCAPE_H = 0x7D
 FRAME_ESCAPE_B = 0b01111101
 FRAME_ESCAPE_B_A = Array.[](0,1,1,1,1,1,0,1)
-
-$BYTESTUFF=false #by default byte stuffing is turned off.
-$cmdlnoptions = {} #initialy empty options hash.
 $serialPort
 
 def ClaimSerialPort( serialline )
@@ -14,8 +11,9 @@ def ClaimSerialPort( serialline )
     $serialPort = SerialPort.new(serialline, 9600, 8, 1, SerialPort::NONE);
 rescue
   $serialPort= nil;
-  print("Serial port (or at least something emulating) is not availiable, error! continuing without serial transmition support\n");
-end
+  print("Serial port (or at least something emulating) is not availiable on this system,"\
+        "continuing without serial transmition support.\n");
+  end
 end
 
 #Returns a two-dimensional array
@@ -53,14 +51,6 @@ def PrintBasicMenu()
   printf("Q|q.  To exit program\n");
   printf("type your command input\n");
   
-end
-
-def ParseArguments()
-  if ARGV.size == 0 
-    printf("No arguments given, using defaults as:\n");
-    printf("--SerialLine to be used is: /dev/ttyUSB0\n");
-    printf("--Transmit bits in binary format\n");
-  end
 end
 
 def ParseMainInput(input)
@@ -263,10 +253,8 @@ def _implCommand5()
   printf("\n");
   printf("You have loaded #{$indPacketsBinArray.size} packets.\n ");
   printf("To transmit an individual packet type from: 1 to #{$indPacketsBinArray.size}, or press 'enter' to transmit them all.\n")
-  
   inp=gets;
-  SerialTxRawBin(inp, $indPacketsBinArray, $serialPort , $BYTESTUFF );
-  
+  SerialTxRawBin(inp, $indPacketsBinArray, $cmdlnoptions[:serialport], $cmdlnoptions[:bytestuff] );
   print("\n");
   
 end

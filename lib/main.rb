@@ -2,10 +2,9 @@ require_relative 'opts'
 #include Curses
 require_relative 'craft'
 
-#ParseArguments();
 ParseOptions();
+ClaimSerialPort( $cmdlnoptions[:serialport]);
 
-printf $serialPort;
 printf("\n---Loaded #{$pckCount} packets---\n");
 PrintBasicMenu();
 

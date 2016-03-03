@@ -159,7 +159,7 @@ def byteStuff( array )
 #  print $indPacketsBinArray[0];
 #    printf("\n\n");
   array = $indPacketsBinArray[0];
-#  printf("Array size is: #{array.length}\n");
+  printf("\n Initial array is:\n #{array}, and length is: #{array.length}\n");
   fetch = 0;
 #  iniarraylen = array.length; #keep the initial array length, because it might change
 #  print("\n current array length is:#{array.length}\n")
@@ -195,6 +195,49 @@ while fetch+7 <= array.length do
 #  print("\nmodified array length is:#{array.length}\n");
 #  printf("\nfinal array is:\n");
 #  print array;
+  array[0,0] = FRAME_DEL_B_A #append the forward array frame.
+  array[array.length,0] = FRAME_DEL_B_A #append the end array frame.
+  
+  printf("\n Stuffed array is:\n #{array}, and length is: #{array.length}\n");
+  return array;
+end
+
+#the reverse of byte stuffing.
+#detect the escape sequences in the data and discard them.
+#then shift (invert) the fifth bit of the next octet.
+def byteDestuff( array )  
+# frame delimeters 0x7E, 0xb01111110, '~'
+# escape delimeter 0x7D, 0xb1111101, '}'
+#FRAME_DEL_H = 0x7E
+#FRAME_DEL_B = 0b01111110
+#FRAME_ESCAPE_H = 0x7D
+#FRAME_ESCAPE_B = 0b01111101
+
+  pos = 0;
+  printf("\nArray before destuff is:\n #{array}, with size: #{array.length}\n");
+  #delete the header flag
+    array.slice!(0,8);
+  #delete the tail flag
+    array.slice!(array.length-8, 8);
+#  printf("\nArray after flag destuff is:\n #{array}, with size: #{array.length}\n");
+  
+while pos+7 <= array.length do
+    tempseg = array.values_at( pos..(pos+8)-1 );
+    if tempseg.eql?(FRAME_ESCAPE_B_A)
+#      printf("\nEscape delimeter found in data, at offset #{pos}\n"); 
+#      printf("\nto remove is: #{array.values_at(pos..pos+7)}, and length is: #{array.length}\n");
+      #remove the escape 0x7D from the array and invert the fifth bit of the next 8 bits data.
+      array.slice!(pos,8) #remove the escape bit sequence      
+#      printf("\narray is: #{array.values_at(pos..pos+7)}, and length is: #{array.length} \n");
+      array[pos+2] = 1; #replace the data found with bit 5 inverted
+#      printf("\narray is: #{array.values_at(pos..pos+7)}, and length is: #{array.length} \n");
+#      printf("\n #{array.values_at(fetch..fetch+15)} \n");
+      pos+=7;
+#      printf("\nthe new array is: #{array}, and length is: #{array.length}\n");
+    end
+    pos+=1;
+  end#while ends here
+#   printf("\nfinal array after destuff is: #{array}, and length is: #{array.length}\n");
   return array;
 end
 

@@ -1,5 +1,5 @@
 require 'serialport'
-require 'curses'
+#require 'curses'
 #require 'xmlsimple'
 require 'yaml'
 

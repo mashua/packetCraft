@@ -9,10 +9,28 @@ $serialPort
 def ClaimSerialPort( serialline )
   begin
     $serialPort = SerialPort.new(serialline, 9600, 8, 1, SerialPort::NONE);
+    $serialPort.read_timeout=0; #read data as soon they appear on the rx line.
+    #Spawn the serial line listener thread.
+    #a call to Thread.sleep() is not needed because the
+    #loop is blocking at its own, on the Serial.read() call.
+    x = Thread.new() {      
+      loop do #keep polling the rx line.
+#        printf("\nbefore\n");
+        incmData = $serialPort.read($serialPort.data_bits);
+#        printf("\nafter\n");
+        printf("#{incmData.unpack("C*")}");
+#        printf("\n#{incmData}\n");
+      end
+#      $serialPort2 = Serial.new
+#      while true
+#        puts "func1 at: #{Time.now}"
+#        sleep(1);
+#      end
+    }; x.run;
   rescue
     $serialPort= nil;
     print("Serial port (or at least something emulating) is not availiable on this system,"\
-          "continuing without serial transmition support.\n");
+          "continuing without serial transmition/reception support.\n");
   end
 end
 
@@ -159,7 +177,7 @@ def byteStuff( array )
 #  print $indPacketsBinArray[0];
 #    printf("\n\n");
   array = $indPacketsBinArray[0];
-  printf("\n Initial array is:\n #{array}, and length is: #{array.length}\n");
+#  printf("\n Initial array is:\n #{array}, and length is: #{array.length}\n");
   fetch = 0;
 #  iniarraylen = array.length; #keep the initial array length, because it might change
 #  print("\n current array length is:#{array.length}\n")
@@ -198,7 +216,7 @@ while fetch+7 <= array.length do
   array[0,0] = FRAME_DEL_B_A #append the forward array frame.
   array[array.length,0] = FRAME_DEL_B_A #append the end array frame.
   
-  printf("\n Stuffed array is:\n #{array}, and length is: #{array.length}\n");
+#  printf("\n Stuffed array is:\n #{array}, and length is: #{array.length}\n");
   return array;
 end
 
@@ -214,7 +232,7 @@ def byteDestuff( array )
 #FRAME_ESCAPE_B = 0b01111101
 
   pos = 0;
-  printf("\nArray before destuff is:\n #{array}, with size: #{array.length}\n");
+#  printf("\nArray before destuff is:\n #{array}, with size: #{array.length}\n");
   #delete the header flag
     array.slice!(0,8);
   #delete the tail flag

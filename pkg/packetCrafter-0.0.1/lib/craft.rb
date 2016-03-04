@@ -73,6 +73,7 @@ $indPacketsBinStrArray.each_with_index { |elem,index| #elem is an array with str
     }
   }
 }
+
 #print $indPacketsBinArray
 #print $totalPacketsBinArray
 #print $indPacketsStrArray;

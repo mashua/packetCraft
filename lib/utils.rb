@@ -9,24 +9,34 @@ $serialPort
 def ClaimSerialPort( serialline )
   begin
     $serialPort = SerialPort.new(serialline, 9600, 8, 1, SerialPort::NONE);
-    $serialPort.read_timeout=0; #read data as soon they appear on the rx line.
+#    $serialPort.read_timeout=0; #read data as soon they appear on the rx line.
     #Spawn the serial line listener thread.
     #a call to Thread.sleep() is not needed because the
     #loop is blocking at its own, on the Serial.read() call.
-    x = Thread.new() {      
-      loop do #keep polling the rx line.
-#        printf("\nbefore\n");
-        incmData = $serialPort.read($serialPort.data_bits);
-#        printf("\nafter\n");
-        printf("#{incmData.unpack("C*")}");
-#        printf("\n#{incmData}\n");
-      end
-#      $serialPort2 = Serial.new
-#      while true
-#        puts "func1 at: #{Time.now}"
-#        sleep(1);
+#    x = Thread.new() {      
+#      $serialPort2 = SerialPort.new(serialline, 9600, 8, 1, SerialPort::NONE);
+#      $serialPort2.read_timeout=0; #read data as soon they appear on the rx line.
+#      dataA = Array.new();
+#      loop do #keep polling the rx line.
+##        printf("\nbefore\n");
+#        incmData = $serialPort2.read($serialPort.data_bits);
+##        incmData = $serialPort.read(1);
+#        if incmData.unpack("C*").eql?(FRAME_DEL_B_A)
+#          printf("\nDISCARING FRAME\n");
+#        else
+#          printf("#{incmData.unpack("C*")}");
+#        end
+##        $serialPort.flush_input();
+##        $serialPort.flush_output();
+#        
+##        printf("\n#{incmData}\n");
 #      end
-    }; x.run;
+##      $serialPort2 = Serial.new
+##      while true
+##        puts "func1 at: #{Time.now}"
+##        sleep(1);
+##      end
+#    }; x.run;
   rescue
     $serialPort= nil;
     print("Serial port (or at least something emulating) is not availiable on this system,"\
@@ -124,6 +134,7 @@ end
 #line, holds the Serial line to use for tx-ition
 #bytestuff, true for byte stuffing before tx-ition, false else.
 def SerialTxRawBin( input, array, line, bytestuff )
+  
   if line == nil
     printf("\nNo serial port found, cannot transmit data.\n");
     return;
@@ -131,8 +142,8 @@ def SerialTxRawBin( input, array, line, bytestuff )
   if input == "\n" #tx all packets.
     if bytestuff==TRUE
       array.each{ |elem|
-        $serialPort.write( byteStuff(elem).pack("C*") );
-#        printf("#{elem.pack("C*")}");
+        $serialPort.write( byteStuff(Array.new(elem)).pack("C*") );
+#        printf("#{elem.pack("C*")}"); 
       }  
     elsif    
       array.each{ |elem|
@@ -143,7 +154,7 @@ def SerialTxRawBin( input, array, line, bytestuff )
   else #tx a specific packet.
   begin  
     if bytestuff==TRUE
-      $serialPort.write( byteStuff(array[(input.to_i)-1]).pack("C*") );
+      $serialPort.write( byteStuff(Array.new(array[(input.to_i)-1])).pack("C*") );
 #      printf("#{array[(input.to_i)-1].pack("C*")}");
     elsif
       $serialPort.write( array[(input.to_i)-1].pack("C*") );
@@ -167,6 +178,9 @@ end
 #and the value of 5E, or 5D. The receiving application must detect the espace octet (0x7D),
 #discard it, and then on the next received octet to shift (invert) the fifth bit.
 def byteStuff( array )
+  
+  printf("\n\nThe initial array is: #{array}, with length:#{array.length}\n\n");
+  
 # frame delimeters 0x7E, 0xb01111110, '~'
 # escape delimeter 0x7D, 0xb1111101, '}'
 #FRAME_DEL_H = 0x7E
@@ -176,8 +190,8 @@ def byteStuff( array )
   
 #  print $indPacketsBinArray[0];
 #    printf("\n\n");
-  array = $indPacketsBinArray[0];
-#  printf("\n Initial array is:\n #{array}, and length is: #{array.length}\n");
+#  array = $indPacketsBinArray[0];
+  printf("\n Initial array is:\n #{array}, and length is: #{array.length}\n");
   fetch = 0;
 #  iniarraylen = array.length; #keep the initial array length, because it might change
 #  print("\n current array length is:#{array.length}\n")
@@ -187,36 +201,36 @@ while fetch+7 <= array.length do
 #     print("\n current array length is:#{array.length}\n")
 #    printf("Fetch time #{times}, and fetch is from: #{fetch} to #{fetch+7} \n")
 #    tempseg = array.values_at( fetch..(times*8)-1 );
-    tempseg = array.values_at( fetch..(fetch+8)-1 );
+    tempseg = array.values_at( fetch..((fetch+8)-1) );
 #    printf("\n");
 #    print tempseg;
 #    printf("\n\n");
     if tempseg.eql?(FRAME_DEL_B_A)
-#      printf("\nFrame delimeter found in data, at offset #{fetch}\n");      
+      printf("\nFrame delimeter found in data, at offset #{fetch}\n");      
       #add an escape 0x7D and the data which are in the tempseg, with 5thbit inverted
       array[fetch,0] = FRAME_ESCAPE_B_A; #append the escape bit sequence (call with length 0)      
       array[fetch+8,8] = [0,1,0,1,1,1,1,0]; #replace the data found with bit 5 inverted
 #      printf("\n #{array.values_at(fetch..fetch+15)} \n");
       fetch+=15;
-#      printf("\n\nthe new array is: #{array}\n");
+      printf("\n\nthe new array is: #{array}\n");
     elsif tempseg.eql?(FRAME_ESCAPE_B_A)
-#      printf("\nEscape delimeter found in data, at offset #{fetch}\n");
+      printf("\nEscape delimeter found in data, at offset #{fetch}\n");
       #add an escape 0x7D and the data which are in the tempseg, with 5thbit inverted
       array[fetch,0] = FRAME_ESCAPE_B_A; #append the escape bit sequence (call with length 0)      
       array[fetch+8,8] = [0,1,0,1,1,1,0,1]; #replace the data found with bit 5 inverted
 #      printf("\n #{array.values_at(fetch..fetch+15)} \n");
       fetch+=15;
-#      printf("\n\nthe new array is: #{array}\n");
+      printf("\n\nthe new array is: #{array}\n");
     end
     fetch+=1;
   end#while ends here
-#  print("\nmodified array length is:#{array.length}\n");
+  print("\nmodified array length is:#{array.length}\n");
 #  printf("\nfinal array is:\n");
 #  print array;
   array[0,0] = FRAME_DEL_B_A #append the forward array frame.
   array[array.length,0] = FRAME_DEL_B_A #append the end array frame.
   
-#  printf("\n Stuffed array is:\n #{array}, and length is: #{array.length}\n");
+  printf("\n Stuffed array is:\n #{array}, and length is: #{array.length}\n");
   return array;
 end
 

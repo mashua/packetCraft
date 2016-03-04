@@ -178,20 +178,17 @@ end
 #and the value of 5E, or 5D. The receiving application must detect the espace octet (0x7D),
 #discard it, and then on the next received octet to shift (invert) the fifth bit.
 def byteStuff( array )
-  
-  printf("\n\nThe initial array is: #{array}, with length:#{array.length}\n\n");
-  
+#  printf("\n\nThe initial array is: #{array}, with length:#{array.length}\n\n");
 # frame delimeters 0x7E, 0xb01111110, '~'
 # escape delimeter 0x7D, 0xb1111101, '}'
 #FRAME_DEL_H = 0x7E
 #FRAME_DEL_B = 0b01111110
 #FRAME_ESCAPE_H = 0x7D
 #FRAME_ESCAPE_B = 0b01111101
-  
 #  print $indPacketsBinArray[0];
 #    printf("\n\n");
 #  array = $indPacketsBinArray[0];
-  printf("\n Initial array is:\n #{array}, and length is: #{array.length}\n");
+#  printf("\n Initial array is:\n #{array}, and length is: #{array.length}\n");
   fetch = 0;
 #  iniarraylen = array.length; #keep the initial array length, because it might change
 #  print("\n current array length is:#{array.length}\n")
@@ -206,31 +203,30 @@ while fetch+7 <= array.length do
 #    print tempseg;
 #    printf("\n\n");
     if tempseg.eql?(FRAME_DEL_B_A)
-      printf("\nFrame delimeter found in data, at offset #{fetch}\n");      
+#      printf("\nFrame delimeter found in data, at offset #{fetch}\n");      
       #add an escape 0x7D and the data which are in the tempseg, with 5thbit inverted
       array[fetch,0] = FRAME_ESCAPE_B_A; #append the escape bit sequence (call with length 0)      
       array[fetch+8,8] = [0,1,0,1,1,1,1,0]; #replace the data found with bit 5 inverted
 #      printf("\n #{array.values_at(fetch..fetch+15)} \n");
       fetch+=15;
-      printf("\n\nthe new array is: #{array}\n");
+#      printf("\n\nthe new array is: #{array}\n");
     elsif tempseg.eql?(FRAME_ESCAPE_B_A)
-      printf("\nEscape delimeter found in data, at offset #{fetch}\n");
+#      printf("\nEscape delimeter found in data, at offset #{fetch}\n");
       #add an escape 0x7D and the data which are in the tempseg, with 5thbit inverted
       array[fetch,0] = FRAME_ESCAPE_B_A; #append the escape bit sequence (call with length 0)      
       array[fetch+8,8] = [0,1,0,1,1,1,0,1]; #replace the data found with bit 5 inverted
 #      printf("\n #{array.values_at(fetch..fetch+15)} \n");
       fetch+=15;
-      printf("\n\nthe new array is: #{array}\n");
+#      printf("\n\nthe new array is: #{array}\n");
     end
     fetch+=1;
   end#while ends here
-  print("\nmodified array length is:#{array.length}\n");
+#  print("\nmodified array length is:#{array.length}\n");
 #  printf("\nfinal array is:\n");
 #  print array;
   array[0,0] = FRAME_DEL_B_A #append the forward array frame.
   array[array.length,0] = FRAME_DEL_B_A #append the end array frame.
-  
-  printf("\n Stuffed array is:\n #{array}, and length is: #{array.length}\n");
+#  printf("\n Stuffed array is:\n #{array}, and length is: #{array.length}\n");
   return array;
 end
 

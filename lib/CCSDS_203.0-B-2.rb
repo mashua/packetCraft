@@ -72,7 +72,7 @@ ACK_SZ = 4;
 SRVC_TYPE_SZ = 8;
 SRVC_STYPE_SZ = 8;
 SRC_ID_SZ = 3
-SPARE_SZ =  1 #reprsize TO PADD THE MESSAGE TO ARCHITECTURE SPECIFIC reprsize, optional
+SPARE_SZ =  1 #reprsize TO PAD THE MESSAGE TO ARCHITECTURE SPECIFIC reprsize, optional
 
 
 #Telecommand packet structure in Array of Hashes

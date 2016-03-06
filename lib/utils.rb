@@ -39,7 +39,6 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-
 FRAME_DEL_H = 0x7E
 FRAME_DEL_B = 0b01111110
 FRAME_DEL_B_A = Array.[](0,1,1,1,1,1,1,0)
@@ -64,20 +63,20 @@ def ClaimSerialPort( serialline )
 #        printf("\nbefore\n");
         incmData = $serialPort.read($serialPort.data_bits);
 #        incmData = $serialPort.read(1);
-        printf("\nthe read data are:#{incmData.unpack("C*")}\n");
+#        printf("\nthe read data are:#{incmData.unpack("C*")}\n");
         if incmData.unpack("C*").eql?(FRAME_DEL_B_A);
-          printf("\nDISCARING FRAME\n");
+#          printf("\nDISCARING FRAME\n");
           frameseen+=1;
 #        elsif incmData.unpack("C*").eql?(FRAME_ESCAPE_B_A);
         else
           if frameseen==2
-            printf("\n\nThe received message is#{ byteDestuff( Array.new(dataA))}\n\n");
+#            printf("\n\nThe received message is#{ byteDestuff( Array.new(dataA))}\n\n");
             dataA.clear;
             frameseen=0;
           else
             incmData.unpack("C*").each{ |elem|
               dataA.push(elem);
-              printf("\ndata in dataArray are:#{data.inspect}")
+#              printf("\ndata in dataArray are:#{data.inspect}")
             }
           end
           

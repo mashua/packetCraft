@@ -49,7 +49,8 @@ $serialPort
 
 def ClaimSerialPort( serialline )
   begin
-    $serialPort = SerialPort.new(serialline, 9600, 8, 1, SerialPort::NONE);
+    $serialPort = SerialPort.new(serialline, 4800, 8, 1, SerialPort::NONE);
+#    $serialPort = SerialPort.new(serialline, 9600, 8, 1, SerialPort::NONE);
 #    $serialPort.read_timeout=0; #read data as soon they appear on the rx line.
     #Spawn the serial line listener thread.
     #a call to Thread.sleep() is not needed because the
@@ -189,6 +190,8 @@ end
 #bytestuff, true for byte stuffing before tx-ition, false else.
 def SerialTxRawBin( input, array, line, bytestuff )
   
+  array_for_tx = Array.new();
+  i=0;
   if line == nil
     printf("\nNo serial port found, cannot transmit data.\n");
     return;
@@ -196,22 +199,36 @@ def SerialTxRawBin( input, array, line, bytestuff )
   if input == "\n" #tx all packets.
     if bytestuff==TRUE
       array.each{ |elem|
-        $serialPort.write( byteStuff(Array.new(elem)).pack("C*") );
+        array_for_tx = byteStuff(Array.new(elem));
+        i+=array_for_tx.length;
+        $serialPort.write( array_for_tx.pack("C*") );
+#        $serialPort.write( byteStuff(Array.new(elem)).pack("C*") );
 #        printf("#{elem.pack("C*")}"); 
-      }  
+      }
+      printf("\nTransmission of #{i} bits completed\n");
     elsif    
       array.each{ |elem|
+        i+=elem.length;
         $serialPort.write( elem.pack("C*") );
 #        printf("#{elem.pack("C*")}");
       }
+      printf("\nTransmission of #{i} bits completed\n");
     end
   else #tx a specific packet.
   begin  
     if bytestuff==TRUE
-      $serialPort.write( byteStuff(Array.new(array[(input.to_i)-1])).pack("C*") );
+      array_for_tx = byteStuff(Array.new(array[(input.to_i)-1]));
+      i+=array_for_tx.length;
+      $serialPort.write(array_for_tx.pack("C*"));
+      printf("\nTransmission of #{i} bits completed\n");
+#      $serialPort.write( byteStuff(Array.new(array[(input.to_i)-1])).pack("C*") );
 #      printf("#{array[(input.to_i)-1].pack("C*")}");
-    elsif
-      $serialPort.write( array[(input.to_i)-1].pack("C*") );
+    else
+      array_for_tx = array[(input.to_i)-1];
+      i+=array_for_tx.length;
+      $serialPort.write(array_for_tx.pack("C*"));
+      printf("\nTransmission of #{i} bits completed\n");
+#      $serialPort.write( array[(input.to_i)-1].pack("C*") );
 #      printf("#{array[(input.to_i)-1].pack("C*")}");
     end
   rescue

@@ -217,7 +217,9 @@ def SerialTxRawBin( input, array, line, bytestuff )
   else #tx a specific packet.
   begin  
     if bytestuff==TRUE
-      array_for_tx = byteStuff(Array.new(array[(input.to_i)-1]));
+#      calc_CRC(array[(input.to_i)-1]);
+      array_for_tx = byteStuff(Array.new(CRC8(array[(input.to_i)-1])));
+#      array_for_tx = byteStuff(Array.new(array[(input.to_i)-1]));
       i+=array_for_tx.length;
       $serialPort.write(array_for_tx.pack("C*"));
       printf("\nTransmission of #{i} bits completed\n");
@@ -404,22 +406,41 @@ def _implCommand5()
   
 end
 
-#-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
-#  printf("\n\n");
-#  stst = sprintf("%0#{8}b", 0x7e)
-#  ststar = stst.chars
-#  print ststar
-#  ststar.each_with_index { |ar,el|
-#    ststar[el.to_i] = ststar[el.to_i].to_i ;
-#  };
-#  printf("\n\n");
-#  print ststar;
-#  printf("%0#{8}b", 0x7e);
-#  printf("\n\n");  
-#  print $indPacketsBinArray[0]
-#  printf("\n\n");
-#  print $indPacketsBinArray[1]
-#  printf("\n\n");
-#  print $indPacketsBinArray[2]
-#  printf("\n\n");
+# calculates CRC on an array witch have bit as elements.
+# theArray, is the array on witch the crc is done.
+# start, is the position on witch the calculation starts.
+# length, is the position on witch the calculation finishes.
+def CRC8( theArray, start, length )
+  fetch = start; #on most cases = 0
+  crc = 0b0; #initial crc value
+#  while fetch+7 <= (theArray.length -16 ) do
+  while fetch+7 <= length do
+    #take 8 bits from the array and make a byte
+    tempseg = theArray.values_at( fetch..((fetch+8)-1) );
+#    printf("current seg is: #{tempseg}\n")
+    tempByte = makeByte(tempseg);
+#    puts sprintf("%08b", tempByte)
+#    print theArray;
+#    print("\n");
+#    print tempseg;
+    crc = crc ^ tempByte;
+    fetch+=8; #go to the start of next byte.
+  end
+#  puts crc;
+  return crc;
+end
+
+# extract a byte from an array witch have bit as elements.
+def makeByte(theArraySeg)
+#  print theArraySeg
+  theByte = 0b0;
+#  print("\n");
+  theArraySeg.each{ |item|
+    theByte = (theByte << (1)) | item
+#    print tByte.to_s(2)
+#    print("\n");
+  }
+  return theByte;
+# puts tByte;
+# puts sprintf("%08b", tByte)
+end

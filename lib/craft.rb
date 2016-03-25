@@ -74,22 +74,24 @@ $pckCount=0;
 #parse the Packet structure
 $crosspacketBlock = Proc.new{ |theHash, level|
 #  $thePacketArray.clear();
-
   theHash.each{ |key, value|
     if key == "has"  #then we have reached the bottom of the structure.
       value.each { |innerhash| #value is an array, the element is a hash.
         $crosspacketBlock.call( innerhash, level );
       }
     elsif key != "name" #no key named has, so parse the repsize and defval into the array.
-                              #sprinf, prints a bitstring
-      $totalPacketsBinStrArray[$pos] = sprintf("%0#{theHash['reprsize']}b", theHash['defval']);
-      $indPacketsBinStrArray[level][$pos]=sprintf("%0#{theHash['reprsize']}b", theHash['defval']);
-      $pos+=1;
-      break; #don't ask why, just break
+                        #sprinf, prints a bitstring
+      if theHash['reprsize'] == 0
+        #don't add anything
+      else
+        $totalPacketsBinStrArray[$pos] = sprintf("%0#{theHash['reprsize']}b", theHash['defval']);
+        $indPacketsBinStrArray[level][$pos]=sprintf("%0#{theHash['reprsize']}b", theHash['defval']);
+        $pos+=1;
+        break; #don't ask why, just break.
+      end
     end
   }
 };
-
 
 $telecmdpackets.each { |innerHash|
   $indPacketsBinStrArray<<Array.new();#new array to hold reference to the new binary string representation of the packet.
@@ -105,8 +107,8 @@ $totalPacketsBinStrArray.each { |elem|
   }
 }
 
-#prepare the individual packets binary arrays
-$indPacketsBinStrArray.each_with_index { |elem,index| #elem is an array with string elements,eg: "010"
+#prepare the individual packet binary arrays
+$indPacketsBinStrArray.each_with_index { |elem,index| #elem is an array with string elements,eg: "0101101"
  $indPacketsBinArray<<Array.new();
   elem.each { |innerArray| #each element its a bit string array
     innerArray.chars { |bit|
@@ -115,25 +117,36 @@ $indPacketsBinStrArray.each_with_index { |elem,index| #elem is an array with str
   }
 }
 
-#print $indPacketsBinArray
-#print $totalPacketsBinArray
-#print $indPacketsStrArray;
-#    print "\n";
-#    print $totalPacketsBinArray;
-#    print "\n";
-#    print $totalPacketsBinArray.length;
-#    print "\n";
-#    print $totalPacketsBinArray.pack("C*");
-#    print "\n";
-#    $indPacketsBinArray.each_index { |unusedlocal|
-#      print "\n";
-#      print $indPacketsBinArray[unusedlocal].pack("C*");
-#      print "\n";
-#  
-#    }
-#    $serialPort.write( $totalPacketsBinArray.pack("C*") );
-#
-#$serialPort.write( $totalPacketsBinArray );
-#
-#$serialPort.write( $totalPacketsBinArray.pack("i*" ) );
-#$serialPort.write "#{$totalPacketsBinArray.length}\n\r"
+#calculate each packet PacketLength field and replace it in the packet array.
+#(this function is specific to ECSS packet scheme handling, and it should be removed (at least from here) in the future).
+#count in decimal the number of bits after the DataFieldHeader (witch is 32 bits) and before PacketErrorControl (witch is 16 bits).
+#we are not using the spare bit, so we count only application data bits.
+#convert this (decimal) number in a array (of 16 bits in length) with bit elements,
+#and finally replace the PacketLength value into the final array.
+$indPacketsBinArray.each { |packetArray|
+#print("\n");
+#print packetArray.length;
+#print("\n");
+#print("before packet len array: #{packetArray.values_at(32..47)}\n")
+  applicationDataArray = packetArray.values_at( (PCKT_HEADER_SZ+PCKT_DATA_FIELD_HEADER_SZ)..(packetArray.length-17) );
+  applicationDataArrayLength = applicationDataArray.length+PCKT_DATA_FIELD_HEADER_SZ+PCKT_PERCTL_SZ;
+  packetLengthArray = sprintf("%016b",applicationDataArrayLength).split(//).map { |elem| elem.to_i  }
+  packetArray[((PCKT_ID_SZ+PCKT_SEQ_CTRL_SZ)..(PCKT_ID_SZ+PCKT_SEQ_CTRL_SZ)+packetLengthArray.length-1)] = packetLengthArray;
+#print("\n");
+#print packetArray.length;
+#print("\n");
+#print("after packet len array: #{packetArray.values_at(32..47)}\n")
+}
+
+#calculate each packet CRC
+$indPacketsBinArray.each { |packetArray|
+  printf("the array lenght before is:#{packetArray.length}\n");
+  printf("the array contents before is:\n#{packetArray}\n");
+  crc8 = CRC8(packetArray, 0, packetArray.length-PCKT_PERCTL_SZ );
+  #return an array having as elements the CRC's individual bits.
+  crc8_array = sprintf("%016b",crc8).split(//).map { |elem| elem.to_i  }
+  #replace the last PCKT_PERCTL_SZ bits of the packet bits array with the crc array.
+  packetArray[packetArray.length-PCKT_PERCTL_SZ, packetArray.length] = crc8_array;
+  printf("the array lenght after is:#{packetArray.length}\n");
+  printf("the array contents after is:\n#{packetArray}\n\n");
+}

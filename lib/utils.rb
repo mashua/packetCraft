@@ -49,9 +49,8 @@ $serialPort
 
 def ClaimSerialPort( serialline )
   begin
-    $serialPort = SerialPort.new(serialline, 4800, 8, 1, SerialPort::NONE);
-#    $serialPort = SerialPort.new(serialline, 9600, 8, 1, SerialPort::NONE);
-#    $serialPort.read_timeout=0; #read data as soon they appear on the rx line.
+    $serialPort = SerialPort.new(serialline, 9600, 8, 1, SerialPort::NONE);
+#    $serialPort = SerialPort.new(serialline, 4800, 8, 1, SerialPort::NONE);
     #Spawn the serial line listener thread.
     #a call to Thread.sleep() is not needed because the
     #loop is blocking at its own, on the Serial.read() call.
@@ -80,7 +79,6 @@ def ClaimSerialPort( serialline )
 #              printf("\ndata in dataArray are:#{data.inspect}")
             }
           end
-          
         end
 #        $serialPort.flush_input();
 #        $serialPort.flush_output();
@@ -174,53 +172,55 @@ end
 #line, holds the Serial line to use for tx-ition
 #bytestuff, true for byte stuffing before tx-ition, false else.
 def SerialTxRawBin( input, array, line, bytestuff )
-  
-  array_for_tx = Array.new();
+  stuffed_array = Array.new();
   i=0;
   if line == nil
     printf("\nNo serial port found, cannot transmit data.\n");
     return;
   end
-  if input == "\n" #tx all packets.
-    if bytestuff==TRUE
+  if input == "\n"
+    if bytestuff==TRUE #tx all packets, bytestuff on
       array.each{ |elem|
-        array_for_tx = byteStuff(Array.new(elem));
-        i+=array_for_tx.length;
-        $serialPort.write( array_for_tx.pack("C*") );
-#        $serialPort.write( byteStuff(Array.new(elem)).pack("C*") );
-#        printf("#{elem.pack("C*")}"); 
+        stuffed_array = byteStuff(Array.new(elem));
+        i+=stuffed_array.length;
+        $serialPort.write(bitsToBytes(stuffed_array).pack("C*") );
+        sleep(1.5);
       }
-      printf("\nTransmission of #{i} bits completed\n");
-    elsif    
+      printf("\nTransmission of #{i} bits, (#{i/8} bytes) completed\n");
+    elsif    #tx all packets, bytestuff off
       array.each{ |elem|
         i+=elem.length;
-        $serialPort.write( elem.pack("C*") );
-#        printf("#{elem.pack("C*")}");
+        $serialPort.write( bitsToBytes(elem).pack("C*") );
       }
-      printf("\nTransmission of #{i} bits completed\n");
+      printf("\nTransmission of #{i} bits, (#{i/8} bytes) completed\n");
     end
-  else #tx a specific packet.
-  begin  
-    if bytestuff==TRUE
-#      calc_CRC(array[(input.to_i)-1]);
-      array_for_tx = byteStuff(Array.new(array[(input.to_i)-1]));
-#      array_for_tx = byteStuff(Array.new(array[(input.to_i)-1]));
-      i+=array_for_tx.length;
-      $serialPort.write(array_for_tx.pack("C*"));
-      printf("\nTransmission of #{i} bits completed\n");
-#      $serialPort.write( byteStuff(Array.new(array[(input.to_i)-1])).pack("C*") );
-#      printf("#{array[(input.to_i)-1].pack("C*")}");
-    else
-      array_for_tx = array[(input.to_i)-1];
-      i+=array_for_tx.length;
-      $serialPort.write(array_for_tx.pack("C*"));
-      printf("\nTransmission of #{i} bits completed\n");
-#      $serialPort.write( array[(input.to_i)-1].pack("C*") );
-#      printf("#{array[(input.to_i)-1].pack("C*")}");
+  else 
+    begin  
+      if bytestuff==TRUE #tx a specific packet, bytestuff on
+        stuffed_array = byteStuff(Array.new(array[(input.to_i)-1]));
+        i+=stuffed_array.length;
+        $serialPort.write(bitsToBytes(stuffed_array).pack("C*")); 
+        printf("\nTransmission of #{i} bits, (#{i/8} bytes) completed\n");
+      else #tx a specific packet, bytestuff off
+        txarray = array[(input.to_i)-1];
+        i+=txarray.length;
+        $serialPort.write(bitsToBytes(txarray).pack("C*"));
+        printf("\nTransmission of #{i} bits, (#{i/8} bytes}) completed\n");
+      end
+    rescue => exception
+      printf("\nnon-existant packet selected\n");
+      puts exception.backtrace
+  #      raise
     end
-  rescue
-      printf("\nnon-existant packet selected");
   end
+end
+
+def printArrayBitsOnBytesSeg(theArray)
+  fetch = 0;
+  while fetch+7 <= theArray.length do
+    tempseg2 = theArray[fetch,(8)];
+    printf("#{tempseg2}\n");
+    fetch+=8; #go to the start of next byte.
   end
 end
 
@@ -327,6 +327,18 @@ while pos+7 <= array.length do
   return array;
 end
 
+# Accepts an array of bits, and returns an array of bytes.
+def bitsToBytes(theArray)
+  fortx = Array.new();
+  fetch = 0;
+  while fetch+7 <= theArray.length do
+    seg = theArray[fetch,(8)];
+    fortx<<makeByte(seg);
+    fetch+=8; #go to the start of next byte.
+  end
+  return fortx;
+end
+
 # calculates CRC on an array witch have bit as elements.
 # theArray, is the array on witch the crc is done.
 # start, is the position on witch the calculation starts.
@@ -341,7 +353,7 @@ def CRC8( theArray, start, length )
 #    tempseg = theArray.values_at( fetch..((fetch+8)-1) );
     tempseg2 = theArray[fetch,(8)];
 #    printf("current seg is: #{tempseg}\n")
-    printf("\ncurrent seg is: #{tempseg2}\n")
+#    printf("\ncurrent seg is: #{tempseg2}\n")
     tempByte = makeByte(tempseg2);
 #    puts sprintf("%08b", tempByte)
 #    print theArray;
@@ -359,12 +371,12 @@ end
 def makeByte(theArraySeg)
 #  print theArraySeg
   theByte = 0b0;
-  print("\n");
+#  print("\n");
   theArraySeg.each{ |item|
     theByte = (theByte << (1)) | item
 #    print("\n");
   }
-  print theByte.to_s(2)
+#  print theByte.to_s(2)
   return theByte;
 # puts tByte;
 # puts sprintf("%08b", tByte)
@@ -377,7 +389,7 @@ def PrintBasicMenu()
   printf("--3.  See the contents of the messages in Hash data structure format (not very usefull)\n");
   printf("--4.  See the contents of the messages in raw binary format\n");
   printf("--5.  Transmit the contents of the messages in Serial Line\n");
-  printf("Q|q.  4To exit program\n");
+  printf("Q|q.  To exit program\n");
   printf("type your command input\n");
 end
 

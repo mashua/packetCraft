@@ -74,7 +74,7 @@ SPARE_SZ  = 0
 
 
 #Telecommand packet structure in Array of Hashes
-$telecmdpackets = [{'name' => 'TestServicePacket',
+$telecmdpackets = [{'name' => 'TestServicePacketOpenBlue',
 #                  'reprsize' => 65542, #page: 44, max packet octets
                   'has' => [ {  'name'  => 'PacketHeader',
 #                                'reprsize'  => 48,
@@ -156,7 +156,7 @@ $telecmdpackets = [{'name' => 'TestServicePacket',
                                             },
                                             { 'name' => 'ApplicationData',
                                               'reprsize' => 40, #just don't put zero (0) here, the proper size will be calculated
-                                                               # at runtime regarding the defval field. 
+                                                                # at runtime regarding the defval field. 
 #                                              'defval' => 50999
                                               'defval' => 0b0000000100000000000000000000000000001000    #enter the packet payload here (binary or decimal values, for the moment)
                                             },
@@ -171,7 +171,7 @@ $telecmdpackets = [{'name' => 'TestServicePacket',
                                           ]
                               }
                             ]},
-                  {'name' => 'TelecommandWholePacket2',
+                  {'name' => 'TestServicePacketCloseBlue',
 #                  'reprsize' => 65542, #page: 44, max packet octets
                   'has' => [ {  'name'  => 'PacketHeader',
 #                                'reprsize'  => 48,
@@ -179,7 +179,7 @@ $telecmdpackets = [{'name' => 'TestServicePacket',
 #                                              'reprsize' => 16,
                                               'has'  => [ { 'name' => 'VersionNumber',
                                                             'reprsize' => 3,
-                                                            'defval' => 2
+                                                            'defval' => 0
                                                           },
                                                           { 'name' => 'Type',
                                                             'reprsize' => 1,
@@ -191,7 +191,7 @@ $telecmdpackets = [{'name' => 'TestServicePacket',
                                                           },
                                                           { 'name' => 'ApplicationProcessID',
                                                             'reprsize' => 11,
-                                                            'defval' => 5
+                                                            'defval' => 1
                                                           }
                                                         ]
                                             },
@@ -199,17 +199,21 @@ $telecmdpackets = [{'name' => 'TestServicePacket',
 #                                              'reprsize'  => 16,
                                               'has' => [ {  'name' => 'SequenceFlags',
                                                             'reprsize' => 2,
-                                                            'defval' => 11 #stand-alone packet
+                                                            'defval' => 3 #stand-alone packet
                                                           },
                                                           { 'name' => 'SequenceCount',
                                                             'reprsize' => 14,
-                                                            'defval' => 1 #packet sequence number
+                                                            'defval' => 185 #packet sequence number
                                                           }                                                
                                                        ]
                                             },
-                                            { 'name'  => 'PacketLength',
+                                            { 'name'  => 'PacketLength', #packet length in octet value (defval) is: 
+                                                                         #      (packetdatafieldheader ((32bits)+
+                                                                         #      PacketErrorCtrl (16bits)+
+                                                                         #      Application Data (n bits)-8) / 8
                                               'reprsize'  => 16,
-                                              'defval' => 512
+                                              'defval' => 66             # this value will be calculated dynamicaly at-runtime.
+                                                                         # just put a value here, but zero.
                                             }
                                           ]
                               }, 
@@ -227,19 +231,19 @@ $telecmdpackets = [{'name' => 'TestServicePacket',
                                                           },
                                                           { 'name' => 'Ack',
                                                             'reprsize' => 4,
-                                                            'defval' => 0xb1111 #see note on page: 45
+                                                            'defval' => 0 #see note on page: 45
                                                           },
                                                           { 'name' => 'Service Type', #which service this telecommand is related
                                                             'reprsize' => 8,
-                                                            'defval' => 255
+                                                            'defval' => 8
                                                           },
                                                           { 'name' => 'Service Subtype',
                                                             'reprsize' => 8,
-                                                            'defval' => 255
+                                                            'defval' => 1
                                                           },
                                                           { 'name' => 'SourceID',
-                                                            'reprsize' => SRC_ID_SZ, #rand(50) needs 6 bits
-                                                            'defval' => 5
+                                                            'reprsize' => SRC_ID_SZ,
+                                                            'defval' => 6
                                                           },
                                                           { 'name' => 'Spare',
                                                             'reprsize' => SPARE_SZ,
@@ -248,16 +252,18 @@ $telecmdpackets = [{'name' => 'TestServicePacket',
                                                          ]
                                             },
                                             { 'name' => 'ApplicationData',
-                                              'reprsize' => 12,
-                                              'defval' => PCKT_APPDT_SZ
+                                              'reprsize' => 40, #just don't put zero (0) here, the proper size will be calculated
+                                                                # at runtime regarding the defval field. 
+#                                              'defval' => 50999
+                                              'defval' => 0b0000000000000000000000000000000000001000    #enter the packet payload here (binary or decimal values, for the moment)
                                             },
                                             { 'name' => 'Spare', #used for padding, see page: 45
-                                              'reprsize' => 6,
+                                              'reprsize' => 0,
                                               'defval' => PCKT_SPR_SZ
                                             },
-                                            { 'name' => 'PacketErrorControl', #used for padding, see page: 45
+                                            { 'name' => 'PacketErrorControl', 
                                               'reprsize' => PCKT_PERCTL_SZ,
-                                              'defval' => 3
+                                              'defval' => 5
                                             }
                                           ]
                               }

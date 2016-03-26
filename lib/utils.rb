@@ -94,7 +94,7 @@ def ClaimSerialPort( serialline )
     }; x.run;
   rescue
     $serialPort= nil;
-    print("Serial port (or at least something emulating) is not availiable on this system,"\
+    print("\nWARNING! Serial port (or at least something emulating) is not availiable on this system,"\
           "continuing without serial transmition/reception support.\n");
   end
 end
@@ -107,7 +107,6 @@ def CreatePacketSegment( width, height )
 end
 
 def SaveTelecmdPacketFile(dir="./packets/packet.yml")
-  
   File.open(dir, "w") do |file|
     file.write $telecmdpackets.to_yaml
   end
@@ -121,19 +120,6 @@ end
 #Returns the file a YAML
 def YLoadTelecmdPacketFFile(dir="./packets/packet.yml");
   YAML::load_file(dir);
-end
-
-def PrintBasicMenu()
-  
-  printf("\nThe following commands are supported:\n");
-  printf("--1.  See the contents of the messages in Integer Array format (bit segments as integer elements)\n");
-  printf("--2.  See the contents of the messages in Bit String format\n");
-  printf("--3.  See the contents of the messages in Hash data structure format (not very usefull)\n");
-  printf("--4.  See the contents of the messages in raw binary format (varies per terminal)\n");
-  printf("--5.  Transmit the contents of the messages in Serial Line\n");
-  printf("Q|q.  To exit program\n");
-  printf("type your command input\n");
-  
 end
 
 def ParseMainInput(input)
@@ -172,7 +158,6 @@ end
 def PrintRawBin( input, array )
   begin
     if input == "\n"
-
       array.each{ |elem|
         print elem.pack("C*");
       }
@@ -185,7 +170,7 @@ def PrintRawBin( input, array )
 end
 
 #input, holds the number of packet to tx.
-#array, holds the array of messages.
+#array, holds the array of packet messages.
 #line, holds the Serial line to use for tx-ition
 #bytestuff, true for byte stuffing before tx-ition, false else.
 def SerialTxRawBin( input, array, line, bytestuff )
@@ -218,7 +203,7 @@ def SerialTxRawBin( input, array, line, bytestuff )
   begin  
     if bytestuff==TRUE
 #      calc_CRC(array[(input.to_i)-1]);
-      array_for_tx = byteStuff(Array.new(CRC8(array[(input.to_i)-1])));
+      array_for_tx = byteStuff(Array.new(array[(input.to_i)-1]));
 #      array_for_tx = byteStuff(Array.new(array[(input.to_i)-1]));
       i+=array_for_tx.length;
       $serialPort.write(array_for_tx.pack("C*"));
@@ -241,7 +226,7 @@ end
 
 #The frame boundary octet is 01111110, (0x7E in hexadecimal notation)
 #A "control escape octet", has the bit sequence '01111101', (0x7D hexadecimal).
-#If either of these two octets appears in the transmitted data, an escape octet is sent, 
+#If either of these two octet appears in the transmitted data, an escape octet is sent, 
 #followed by the original data octet with bit 5 inverted.
 #For example, the data sequence "01111110" (0x7E hex)
 #would be transmitted as "01111101 01011110" ("0x7D 0x5E" hex)
@@ -273,7 +258,7 @@ while fetch+7 <= array.length do
 #    tempseg = array.values_at( fetch..(times*8)-1 );
     tempseg = array.values_at( fetch..((fetch+8)-1) );
 #    printf("\n");
-#    print tempseg;
+#    print tempseg; 0b 01111110 010 01111101 01111110 010 01111101 01111110 010 01111101
 #    printf("\n\n");
     if tempseg.eql?(FRAME_DEL_B_A)
 #      printf("\nFrame delimeter found in data, at offset #{fetch}\n");      
@@ -342,70 +327,6 @@ while pos+7 <= array.length do
   return array;
 end
 
-private
-#Integer Array format
-def _implCommand1()
-  
-  printf("\n");
-  printf("You have loaded #{$indPacketsBinArray.size} packets.\n ");
-  printf("To see an individual packet type from: 1 to #{$indPacketsBinArray.size}, or press 'enter' to see them all.\n")
-  
-  inp=gets;
-  ParseInnerArrayInput(inp, $indPacketsBinArray );
-  
-  print("\n");
-  
-end
-
-def _implCommand2()
-  
-  printf("\n");
-  printf("You have loaded #{$indPacketsBinStrArray.size} packets.\n ");
-  printf("To see an individual packet type from: 1 to #{$indPacketsBinStrArray.size}, or press 'enter' to see them all.\n")
-  
-  inp=gets;
-  ParseInnerArrayInput(inp, $indPacketsBinStrArray );
-  
-  print("\n");
-  
-end
-
-def _implCommand3()
-  
-  printf("\n");
-  printf("You have loaded #{$indPacketsStrArray.size} packets.\n ");
-  printf("To see an individual packet type from: 1 to #{$indPacketsStrArray.size}, or press 'enter' to see them all.\n")
-  
-  inp=gets;
-  ParseInnerArrayInput(inp, $indPacketsStrArray );
-  
-  print("\n");
-  
-end
-
-def _implCommand4()
-  
-  printf("\n");
-  printf("You have loaded #{$indPacketsBinArray.size} packets.\n ");
-  printf("To see an individual packet type from: 1 to #{$indPacketsBinArray.size}, or press 'enter' to see them all.\n")
-  
-  inp=gets;
-  PrintRawBin(inp, $indPacketsBinArray );
-  print("\n");
-  
-end
-
-def _implCommand5()
-  
-  printf("\n");
-  printf("You have loaded #{$indPacketsBinArray.size} packets.\n ");
-  printf("To transmit an individual packet type from: 1 to #{$indPacketsBinArray.size}, or press 'enter' to transmit them all.\n")
-  inp=gets;
-  SerialTxRawBin(inp, $indPacketsBinArray, $cmdlnoptions[:serialport], $cmdlnoptions[:bytestuff] );
-  print("\n");
-  
-end
-
 # calculates CRC on an array witch have bit as elements.
 # theArray, is the array on witch the crc is done.
 # start, is the position on witch the calculation starts.
@@ -413,12 +334,15 @@ end
 def CRC8( theArray, start, length )
   fetch = start; #on most cases = 0
   crc = 0b0; #initial crc value
+  tempByte = 0b0;
 #  while fetch+7 <= (theArray.length -16 ) do
   while fetch+7 <= length do
     #take 8 bits from the array and make a byte
-    tempseg = theArray.values_at( fetch..((fetch+8)-1) );
+#    tempseg = theArray.values_at( fetch..((fetch+8)-1) );
+    tempseg2 = theArray[fetch,(8)];
 #    printf("current seg is: #{tempseg}\n")
-    tempByte = makeByte(tempseg);
+    printf("\ncurrent seg is: #{tempseg2}\n")
+    tempByte = makeByte(tempseg2);
 #    puts sprintf("%08b", tempByte)
 #    print theArray;
 #    print("\n");
@@ -430,17 +354,87 @@ def CRC8( theArray, start, length )
   return crc;
 end
 
-# extract a byte from an array witch have bit as elements.
+# Extract a byte from an array witch have 8 distinct bit as elements.
+# Returns a byte
 def makeByte(theArraySeg)
 #  print theArraySeg
   theByte = 0b0;
-#  print("\n");
+  print("\n");
   theArraySeg.each{ |item|
     theByte = (theByte << (1)) | item
-#    print tByte.to_s(2)
 #    print("\n");
   }
+  print theByte.to_s(2)
   return theByte;
 # puts tByte;
 # puts sprintf("%08b", tByte)
+end
+
+def PrintBasicMenu()
+  printf("\nThe following commands are supported:\n");
+  printf("--1.  See the contents of the messages in Integer Array format (bit segments as integer elements)\n");
+  printf("--2.  See the contents of the messages in Bit String format\n");
+  printf("--3.  See the contents of the messages in Hash data structure format (not very usefull)\n");
+  printf("--4.  See the contents of the messages in raw binary format\n");
+  printf("--5.  Transmit the contents of the messages in Serial Line\n");
+  printf("Q|q.  4To exit program\n");
+  printf("type your command input\n");
+end
+
+:private
+def _implCommand1()
+  
+  printf("\n");
+  printf("You have loaded #{$indPacketsBinArray.size} packets.\n");
+  printf("To see an individual packet type from: 1 to #{$indPacketsBinArray.size}, or press 'enter' to see them all.\n");
+  inp=gets;
+  ParseInnerArrayInput(inp, $indPacketsBinArray);
+  print("\n");
+  
+end
+
+def _implCommand2()
+  
+  printf("\n");
+  printf("You have loaded #{$indPacketsBinStrArray.size} packets.\n ");
+  printf("To see an individual packet type from: 1 to #{$indPacketsBinStrArray.size}, or press 'enter' to see them all.\n");
+  inp=gets;
+  ParseInnerArrayInput(inp, $indPacketsBinStrArray );
+  
+  print("\n");
+  
+end
+
+def _implCommand3()
+  
+  printf("\n");
+  printf("You have loaded #{$indPacketsStrArray.size} packets.\n ");
+  printf("To see an individual packet type from: 1 to #{$indPacketsStrArray.size}, or press 'enter' to see them all.\n");
+  inp=gets;
+  ParseInnerArrayInput(inp, $indPacketsStrArray );
+  
+  print("\n");
+  
+end
+
+def _implCommand4()
+  
+  printf("\n");
+  printf("You have loaded #{$indPacketsBinArray.size} packets.\n ");
+  printf("To see an individual packet type from: 1 to #{$indPacketsBinArray.size}, or press 'enter' to see them all.\n");
+  inp=gets;
+  PrintRawBin(inp, $indPacketsBinArray );
+  print("\n");
+  
+end
+
+def _implCommand5()
+  
+  printf("\n");
+  printf("You have loaded #{$indPacketsBinArray.size} packets.\n ");
+  printf("To transmit an individual packet type from: 1 to #{$indPacketsBinArray.size}, or press 'enter' to transmit them all.\n");
+  inp=gets;
+  SerialTxRawBin(inp, $indPacketsBinArray, $cmdlnoptions[:serialport], $cmdlnoptions[:bytestuff] );
+  print("\n");
+  
 end

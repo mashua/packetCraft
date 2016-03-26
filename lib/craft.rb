@@ -128,10 +128,21 @@ $indPacketsBinArray.each { |packetArray|
 #print packetArray.length;
 #print("\n");
 #print("before packet len array: #{packetArray.values_at(32..47)}\n")
-  applicationDataArray = packetArray.values_at( (PCKT_HEADER_SZ+PCKT_DATA_FIELD_HEADER_SZ)..(packetArray.length-17) );
-  applicationDataArrayLength = applicationDataArray.length+PCKT_DATA_FIELD_HEADER_SZ+PCKT_PERCTL_SZ;
-  packetLengthArray = sprintf("%016b",applicationDataArrayLength).split(//).map { |elem| elem.to_i  }
+#print packetArray[((PCKT_ID_SZ+PCKT_SEQ_CTRL_SZ)..(PCKT_ID_SZ+PCKT_SEQ_CTRL_SZ)+15)]
+#print("\n");
+#print packetArray[ (PCKT_ID_SZ+PCKT_SEQ_CTRL_SZ+PCKT_LGTH_SZ),(PCKT_DATA_FIELD_HEADER_SZ) ]
+#print packetArray[ (PCKT_ID_SZ+PCKT_SEQ_CTRL_SZ+PCKT_LGTH_SZ+PCKT_DATA_FIELD_HEADER_SZ+40),(16) ]
+#print("\n");
+  dataPayloadArray = packetArray.values_at( (PCKT_HEADER_SZ+PCKT_DATA_FIELD_HEADER_SZ)..(packetArray.length-17) );
+#  print dataPayloadArray;
+#  print("\n");
+  dataPayloadArrayLength = ((dataPayloadArray.length+PCKT_DATA_FIELD_HEADER_SZ+PCKT_PERCTL_SZ)-8)/8; #in octet, page 44 (C-1(octet))
+  packetLengthArray = sprintf("%016b",dataPayloadArrayLength).split(//).map { |elem| elem.to_i  }
+#  print packetLengthArray;
+#  print("\n");
   packetArray[((PCKT_ID_SZ+PCKT_SEQ_CTRL_SZ)..(PCKT_ID_SZ+PCKT_SEQ_CTRL_SZ)+packetLengthArray.length-1)] = packetLengthArray;
+#  print packetArray[((PCKT_ID_SZ+PCKT_SEQ_CTRL_SZ)..(PCKT_ID_SZ+PCKT_SEQ_CTRL_SZ)+15)]
+#  print("\n");
 #print("\n");
 #print packetArray.length;
 #print("\n");
@@ -140,13 +151,21 @@ $indPacketsBinArray.each { |packetArray|
 
 #calculate each packet CRC
 $indPacketsBinArray.each { |packetArray|
-  printf("the array lenght before is:#{packetArray.length}\n");
-  printf("the array contents before is:\n#{packetArray}\n");
+#  printf("the array lenght before is:#{packetArray.length}\n");
+#  printf("the array contents before is:\n#{packetArray}\n");
+print packetArray[ (PCKT_ID_SZ+PCKT_SEQ_CTRL_SZ+PCKT_LGTH_SZ+PCKT_DATA_FIELD_HEADER_SZ+40),(16) ]
+print("\n");
   crc8 = CRC8(packetArray, 0, packetArray.length-PCKT_PERCTL_SZ );
   #return an array having as elements the CRC's individual bits.
   crc8_array = sprintf("%016b",crc8).split(//).map { |elem| elem.to_i  }
   #replace the last PCKT_PERCTL_SZ bits of the packet bits array with the crc array.
-  packetArray[packetArray.length-PCKT_PERCTL_SZ, packetArray.length] = crc8_array;
-  printf("the array lenght after is:#{packetArray.length}\n");
-  printf("the array contents after is:\n#{packetArray}\n\n");
+  packetArray[packetArray.length-PCKT_PERCTL_SZ, PCKT_PERCTL_SZ] = crc8_array;
+print packetArray[ (PCKT_ID_SZ+PCKT_SEQ_CTRL_SZ+PCKT_LGTH_SZ+PCKT_DATA_FIELD_HEADER_SZ+40),(16) ]
+print("\n");
+  
+#  printf("the array lenght after is:#{packetArray.length}\n");
+#  printf("the array contents after is:\n#{packetArray}\n\n");
 }
+
+print $indPacketsBinArray[0];
+print("\n");

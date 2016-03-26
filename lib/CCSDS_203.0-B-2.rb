@@ -82,7 +82,7 @@ $telecmdpackets = [{'name' => 'TestServicePacket',
 #                                              'reprsize' => 16,
                                               'has'  => [ { 'name' => 'VersionNumber',
                                                             'reprsize' => 3,
-                                                            'defval' => 3
+                                                            'defval' => 0
                                                           },
                                                           { 'name' => 'Type',
                                                             'reprsize' => 1,
@@ -106,16 +106,17 @@ $telecmdpackets = [{'name' => 'TestServicePacket',
                                                           },
                                                           { 'name' => 'SequenceCount',
                                                             'reprsize' => 14,
-                                                            'defval' => 6 #packet sequence number
+                                                            'defval' => 185 #packet sequence number
                                                           }                                                
                                                        ]
                                             },
-                                            { 'name'  => 'PacketLength', #packet length value (defval) is: 
-                                                                         #      packetdatafieldheader (32bits)+
+                                            { 'name'  => 'PacketLength', #packet length in octet value (defval) is: 
+                                                                         #      (packetdatafieldheader ((32bits)+
                                                                          #      PacketErrorCtrl (16bits)+
-                                                                         #      Application Data (n bits)
+                                                                         #      Application Data (n bits)-8) / 8
                                               'reprsize'  => 16,
-                                              'defval' => 15
+                                              'defval' => 66             # this value will be calculated dynamicaly at-runtime.
+                                                                         # just put a value here, but zero.
                                             }
                                           ]
                               }, 
@@ -137,7 +138,7 @@ $telecmdpackets = [{'name' => 'TestServicePacket',
                                                           },
                                                           { 'name' => 'Service Type', #which service this telecommand is related
                                                             'reprsize' => 8,
-                                                            'defval' => 17
+                                                            'defval' => 8
                                                           },
                                                           { 'name' => 'Service Subtype',
                                                             'reprsize' => 8,
@@ -154,10 +155,10 @@ $telecmdpackets = [{'name' => 'TestServicePacket',
                                                          ]
                                             },
                                             { 'name' => 'ApplicationData',
-                                              'reprsize' => 1, #just don't put zero (0) here, the proper size will be calculated
+                                              'reprsize' => 40, #just don't put zero (0) here, the proper size will be calculated
                                                                # at runtime regarding the defval field. 
-                                              #'defval' => 665
-                                              'defval' => 0b1011000100010    #enter the packet payload here (binary or decimal values, for the moment)
+#                                              'defval' => 50999
+                                              'defval' => 0b0000000100000000000000000000000000001000    #enter the packet payload here (binary or decimal values, for the moment)
                                             },
                                             { 'name' => 'Spare', #used for padding, see page: 45
                                               'reprsize' => 0,

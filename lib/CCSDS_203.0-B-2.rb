@@ -371,7 +371,7 @@ $schedule_packets = [{'name' => 'SchedulePacket1',
 #                                              'reprsize' => 16,
                                               'has'  => [ { 'name' => 'VersionNumber',
                                                             'reprsize' => 3,
-                                                            'defval' => 2
+                                                            'defval' => 0
                                                           },
                                                           { 'name' => 'Type',
                                                             'reprsize' => 1,
@@ -383,7 +383,7 @@ $schedule_packets = [{'name' => 'SchedulePacket1',
                                                           },
                                                           { 'name' => 'ApplicationProcessID',
                                                             'reprsize' => 11,
-                                                            'defval' => 5
+                                                            'defval' => 1
                                                           }
                                                         ]
                                             },
@@ -391,17 +391,21 @@ $schedule_packets = [{'name' => 'SchedulePacket1',
 #                                              'reprsize'  => 16,
                                               'has' => [ {  'name' => 'SequenceFlags',
                                                             'reprsize' => 2,
-                                                            'defval' => 11 #stand-alone packet
+                                                            'defval' => 3 #stand-alone packet
                                                           },
                                                           { 'name' => 'SequenceCount',
                                                             'reprsize' => 14,
-                                                            'defval' => 126 #packet sequence number
+                                                            'defval' => 185 #packet sequence number
                                                           }                                                
                                                        ]
                                             },
-                                            { 'name'  => 'PacketLength',
+                                            { 'name'  => 'PacketLength', #packet length in octet value (defval) is: 
+                                                                         #      (packetdatafieldheader ((32bits)+
+                                                                         #      PacketErrorCtrl (16bits)+
+                                                                         #      Application Data (n bits)-8) / 8
                                               'reprsize'  => 16,
-                                              'defval' => 125
+                                              'defval' => 66             # this value will be calculated dynamicaly at-runtime.
+                                                                         # just put a value here, but zero.
                                             }
                                           ]
                               }, 
@@ -419,19 +423,19 @@ $schedule_packets = [{'name' => 'SchedulePacket1',
                                                           },
                                                           { 'name' => 'Ack',
                                                             'reprsize' => 4,
-                                                            'defval' => 0xb1111 #see note on page: 45
+                                                            'defval' => 0 #see note on page: 45
                                                           },
                                                           { 'name' => 'Service Type', #which service this telecommand is related
                                                             'reprsize' => 8,
-                                                            'defval' => 125
+                                                            'defval' => 8
                                                           },
                                                           { 'name' => 'Service Subtype',
                                                             'reprsize' => 8,
-                                                            'defval' => 55
+                                                            'defval' => 1
                                                           },
                                                           { 'name' => 'SourceID',
-                                                            'reprsize' => SRC_ID_SZ, #rand(50) needs 6 bits
-                                                            'defval' => 5
+                                                            'reprsize' => SRC_ID_SZ,
+                                                            'defval' => 6
                                                           },
                                                           { 'name' => 'Spare',
                                                             'reprsize' => SPARE_SZ,
@@ -440,16 +444,18 @@ $schedule_packets = [{'name' => 'SchedulePacket1',
                                                          ]
                                             },
                                             { 'name' => 'ApplicationData',
-                                              'reprsize' => 12,
-                                              'defval' => PCKT_APPDT_SZ
+                                              'reprsize' => 40, #just don't put zero (0) here, the proper size will be calculated
+                                                                # at runtime regarding the defval field. 
+#                                              'defval' => 50999
+                                              'defval' => 0b0000000100000000000000000000000000001000    #enter the packet payload here (binary or decimal values, for the moment)
                                             },
                                             { 'name' => 'Spare', #used for padding, see page: 45
-                                              'reprsize' => 6,
+                                              'reprsize' => 0,
                                               'defval' => PCKT_SPR_SZ
                                             },
-                                            { 'name' => 'PacketErrorControl', #used for padding, see page: 45
+                                            { 'name' => 'PacketErrorControl', 
                                               'reprsize' => PCKT_PERCTL_SZ,
-                                              'defval' => 3
+                                              'defval' => 5
                                             }
                                           ]
                               }]

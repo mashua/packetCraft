@@ -191,6 +191,7 @@ def SerialTxRawBin( input, array, line, bytestuff )
       array.each{ |elem|
         i+=elem.length;
         $serialPort.write( bitsToBytes(elem).pack("C*") );
+        sleep(1.5);
       }
       printf("\nTransmission of #{i} bits, (#{i/8} bytes) completed\n");
     end
@@ -199,6 +200,7 @@ def SerialTxRawBin( input, array, line, bytestuff )
       if bytestuff==TRUE #tx a specific packet, bytestuff on
         stuffed_array = byteStuff(Array.new(array[(input.to_i)-1]));
         i+=stuffed_array.length;
+          printArrayBitsOnBytesSeg(stuffed_array);
         $serialPort.write(bitsToBytes(stuffed_array).pack("C*")); 
         printf("\nTransmission of #{i} bits, (#{i/8} bytes) completed\n");
       else #tx a specific packet, bytestuff off
@@ -219,7 +221,7 @@ def printArrayBitsOnBytesSeg(theArray)
   fetch = 0;
   while fetch+7 <= theArray.length do
     tempseg2 = theArray[fetch,(8)];
-    printf("#{tempseg2}\n");
+    print sprintf("Byte No:%02d #{tempseg2}\n", (fetch/8).to_i);
     fetch+=8; #go to the start of next byte.
   end
 end

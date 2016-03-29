@@ -84,10 +84,20 @@ $crosspacketBlock = Proc.new{ |theHash, level|
       if theHash['reprsize'] == 0
         #don't add anything
       else
-        $totalPacketsBinStrArray[$pos] = sprintf("%0#{theHash['reprsize']}b", theHash['defval']);
-        $indPacketsBinStrArray[level][$pos]=sprintf("%0#{theHash['reprsize']}b", theHash['defval']);
-        $pos+=1;
-        break; #don't ask why, just break.
+          if theHash['defval'].class == Array
+            temp_ar = decByteArraytoBits(theHash['defval']);
+            temp_ar.each{ |elem|
+              $totalPacketsBinStrArray[$pos] =  elem;
+              $indPacketsBinStrArray[level][$pos] = elem;
+              $pos+=1;
+            }
+            break; #don't ask why, just break.
+          else
+            $totalPacketsBinStrArray[$pos] = sprintf("%0#{theHash['reprsize']}b", theHash['defval']);
+            $indPacketsBinStrArray[level][$pos]=sprintf("%0#{theHash['reprsize']}b", theHash['defval']);
+            $pos+=1;
+            break; #don't ask why, just break.
+          end
       end
     end
   }

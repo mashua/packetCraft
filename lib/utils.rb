@@ -384,6 +384,17 @@ def makeByte(theArraySeg)
 # puts sprintf("%08b", tByte)
 end
 
+# Accepts an array with decimal values and returns an array
+# with the appropriate bits.
+# Every value is zero padded to 8 bits.
+def decByteArraytoBits(theArray)
+  bits_array = Array.new();
+  theArray.each{ |elem|
+    bits_array << sprintf("%08b", elem);
+  }
+  return bits_array;
+end
+
 def PrintBasicMenu()
   printf("\nThe following commands are supported:\n");
   printf("--1.  See the contents of the messages in Integer Array format (bit segments as integer elements)\n");

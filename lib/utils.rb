@@ -61,29 +61,32 @@ def ClaimSerialPort( serialline )
       frameseen=0;
       loop do #keep polling the rx line.
 #        printf("\nbefore\n");
-        incmData = $serialPort.read($serialPort.data_bits);
+        incmData = $serialPort.gets
 #        incmData = $serialPort.read(1);
+        print("------------------------\n");
+        print incmData;
+        print("\n");
 #        printf("\nthe read data are:#{incmData.unpack("C*")}\n");
-        if incmData.unpack("C*").eql?(FRAME_DEL_B_A);
-#          printf("\nDISCARING FRAME\n");
-          frameseen+=1;
-#        elsif incmData.unpack("C*").eql?(FRAME_ESCAPE_B_A);
-        else
-          if frameseen==2
-#            printf("\n\nThe received message is#{ byteDestuff( Array.new(dataA))}\n\n");
-            dataA.clear;
-            frameseen=0;
-          else
-            incmData.unpack("C*").each{ |elem|
-              dataA.push(elem);
-#              printf("\ndata in dataArray are:#{data.inspect}")
-            }
-          end
+#        if incmData.unpack("C*").eql?(FRAME_DEL_B_A);
+##          printf("\nDISCARING FRAME\n");
+#          frameseen+=1;
+##        elsif incmData.unpack("C*").eql?(FRAME_ESCAPE_B_A);
+#        else
+#          if frameseen==2
+##            printf("\n\nThe received message is#{ byteDestuff( Array.new(dataA))}\n\n");
+#            dataA.clear;
+#            frameseen=0;
+#          else
+#            incmData.unpack("C*").each{ |elem|
+#              dataA.push(elem);
+##              printf("\ndata in dataArray are:#{data.inspect}")
+#            }
+#          end
         end
-#        $serialPort.flush_input();
-#        $serialPort.flush_output();
-#        printf("\n#{incmData}\n");
-      end
+##        $serialPort.flush_input();
+##        $serialPort.flush_output();
+##        printf("\n#{incmData}\n");
+#      end
 #      $serialPort2 = Serial.new
 #      while true
 #        puts "func1 at: #{Time.now}"
@@ -92,7 +95,7 @@ def ClaimSerialPort( serialline )
     }; x.run;
   rescue
     $serialPort= nil;
-    print("\nWARNING! Serial port (or at least something emulating) is not availiable on this system,"\
+    print("\nWARNING! Serial port (or at least something emulating it) is not availiable on this system,"\
           "continuing without serial transmition/reception support.\n");
   end
 end

@@ -210,9 +210,9 @@ def SerialTxRawBin( input, array, line, bytestuff )
         printf("\nTransmission of #{i} bits, (#{i/8} bytes}) completed\n");
       end
     rescue => exception
-      printf("\nnon-existant packet selected\n");
-      puts exception.backtrace
-  #      raise
+#      printf("\nnon-existant packet selected\n");
+#      puts exception.backtrace
+        raise
     end
   end
 end

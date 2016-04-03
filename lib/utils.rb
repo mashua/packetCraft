@@ -53,19 +53,41 @@ def ClaimSerialPort( serialline )
 #    $serialPort = SerialPort.new(serialline, 4800, 8, 1, SerialPort::NONE);
     #Spawn the serial line listener thread.
     #a call to Thread.sleep() is not needed because the
-    #loop is blocking at its own, on the Serial.read() call.
+    #loop is blocking at its own, on the Serial.read_whatever() call.
     x = Thread.new() {      
 #      $serialPort2 = SerialPort.new(serialline, 9600, 8, 1, SerialPort::NONE);
       $serialPort.read_timeout=0; #read data as soon they appear on the rx line.
-      dataA = Array.new();
+      message = Array.new();
       frameseen=0;
       loop do #keep polling the rx line.
 #        printf("\nbefore\n");
-        incmData = $serialPort.gets
-#        incmData = $serialPort.read(1);
-        print("------------------------\n");
-        print incmData;
-        print("\n");
+#        incmData = $serialPort.read(19);
+#        incmData = $serialPort.readchar;
+#        incmData = $serialPort.readchar;
+         incmData = $serialPort.readbyte
+         message << incmData;
+#        print("\n------------------------------------------------\n");
+#        print(incmData.to_s(16));
+        if incmData == FRAME_DEL_H
+          frameseen+=1;
+          if frameseen==2
+            #end frame has come, parse the message array.
+            #reset for the other round.
+            frameseen=0;
+#            print message;
+#            print("\n");
+            begin
+              parseMessage( Array.new( message));
+              message.clear
+            rescue=> exep
+              raise;
+            end
+            
+          end
+        end
+#          print incmData.to_s();
+#          print("\n");
+        
 #        printf("\nthe read data are:#{incmData.unpack("C*")}\n");
 #        if incmData.unpack("C*").eql?(FRAME_DEL_B_A);
 ##          printf("\nDISCARING FRAME\n");
@@ -98,6 +120,65 @@ def ClaimSerialPort( serialline )
     print("\nWARNING! Serial port (or at least something emulating it) is not availiable on this system,"\
           "continuing without serial transmition/reception support.\n");
   end
+end
+
+# Parses an array containing (hopefully) a ECSS-E-70-41A
+# message.
+def parseMessage(theArray)
+    message = Array.new();
+    theArray.each { |elem| #elem is Fixnum 
+      if elem == FRAME_DEL_H
+        next #AKA, waste cycles
+      else 
+        message.push( sprintf("%08b",elem).split(//).map{ |elem| elem.to_i } );
+      end
+    }
+    message.flatten!(1);
+    breakECSS(message);
+#    print message.length;
+#    print("\n");
+#    message.each { |innerArray|
+#      print innerArray
+#      innerArray.flat
+#      messageBits.push(innerArray.to_s(2).split(//).map{|bit| bit.to_i});
+#    }
+    
+#  the.split(//).map{|elem| elem.to_i}
+#print messageBits;
+#    print("\n#{messageBits.length}");
+#  print theArray[0].class
+#  print theArray.split(',').map { |elem| elem.to_i  }
+
+#  print("\n");
+#print("\n#{the.length}"); 
+end
+
+def breakECSS(theArray)
+  
+  version_number = makeByte( theArray[0,3]);
+  type = makeByte( theArray[3,1]);
+  data_field_header_flag = makeByte( theArray[4,1]);
+  application_process_id = makeByte( theArray[5,11]);
+  sequence_flags = makeByte( theArray[16,2]);
+  sequence_count = makeByte( theArray[18,14]);
+  packet_length = makeByte( theArray[32,16]); #+1 octet
+  ccsds_secondary_header_flag = makeByte( theArray[48,1]);
+  tc_packet_pus_version_number = makeByte( theArray[49,3]);
+  ack = makeByte( theArray[52,4]);
+  service_type = makeByte( theArray[56,8]);
+  service_subtype = makeByte( theArray[64,8]);
+  source_id = makeByte( theArray[72,8]);
+  
+  packet_length += 1; #plus 1 octet
+  packet_length *= 8; #bits number
+  packet_length -= 16+32 #remove data field header, crc bits
+#  application_data = theArray[80,packet_length*8];
+  application_data = bitsToBytes( theArray[80,packet_length]);
+#  application_data = bitsToBytes( theArray[80, theArray.length - 15]);
+  checksum = CRC8(theArray, theArray.length-16, theArray.length);
+  
+  print checksum
+  
 end
 
 #Returns a two-dimensional array

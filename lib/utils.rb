@@ -177,7 +177,12 @@ def breakECSS(theArray)
 #  application_data = bitsToBytes( theArray[80, theArray.length - 15]);
   checksum = CRC8(theArray, theArray.length-16, theArray.length);
   
-  print checksum
+  print("\n\n");
+  print sprintf("|--APID--|--SeqFlags--|--SeqCount--|--Ack--|--SerType--|--SubSerType--|--SourceID--|--ApData--|\n");
+  print sprintf("|%01$8s|%02$12s|%03$12s|%04$7s|%05$11s|%06$14s|%07$12s|%08$10s|\n",
+    application_process_id.to_s.center(8), sequence_flags.to_s.center(8), sequence_count.to_s.center(8), ack.to_s.center(7), 
+    service_type.to_s.center(11), service_subtype.to_s.center(14), source_id.to_s.center(12), application_data.to_s.center(10));
+  print sprintf("|--------|------------|------------|-------|-----------|--------------|------------|\n");
   
 end
 

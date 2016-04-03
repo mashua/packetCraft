@@ -64,22 +64,25 @@ def ClaimSerialPort( serialline )
 #        incmData = $serialPort.read(19);
 #        incmData = $serialPort.readchar;
 #        incmData = $serialPort.readchar;
-         incmData = $serialPort.readbyte
-         message << incmData;
-#        print("\n------------------------------------------------\n");
-#        print(incmData.to_s(16));
+         incmData = $serialPort.readbyte;
+         
+#        print incmData;
+        if frameseen >= 1
+          message << incmData;
+        end
         if incmData == FRAME_DEL_H
           frameseen+=1;
           if frameseen==2
             #end frame has come, parse the message array.
             #reset for the other round.
             frameseen=0;
-#            print message;
-#            print("\n");
+            print message;
+            print("\n");
             begin
+#              printf("\n incoming:#{message}");
               parseMessage( Array.new( message));
               message.clear
-            rescue=> exep
+            rescue=> exe
               raise;
             end
             

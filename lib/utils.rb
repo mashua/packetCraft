@@ -50,23 +50,19 @@ $serialPort
 def ClaimSerialPort( serialline )
   begin
     $serialPort = SerialPort.new(serialline, 9600, 8, 1, SerialPort::NONE);
-#    $serialPort = SerialPort.new(serialline, 4800, 8, 1, SerialPort::NONE);
     #Spawn the serial line listener thread.
     #a call to Thread.sleep() is not needed because the
-    #loop is blocking at its own, on the Serial.read_whatever() call.
-    x = Thread.new() {      
-#      $serialPort2 = SerialPort.new(serialline, 9600, 8, 1, SerialPort::NONE);
+    #loop is blocking at its own, at the Serial.read_whatever() call.
+    slt = Thread.new() {      
       $serialPort.read_timeout=0; #read data as soon they appear on the rx line.
       message = Array.new();
       frameseen=0;
       loop do #keep polling the rx line.
-#        printf("\nbefore\n");
+              #here standard IO calls can be used on the $serialPort
+              
 #        incmData = $serialPort.read(19);
 #        incmData = $serialPort.readchar;
-#        incmData = $serialPort.readchar;
-         incmData = $serialPort.readbyte;
-         
-#        print incmData;
+        incmData = $serialPort.readbyte;
         if frameseen >= 1
           message << incmData;
         end
@@ -76,48 +72,18 @@ def ClaimSerialPort( serialline )
             #end frame has come, parse the message array.
             #reset for the other round.
             frameseen=0;
-            print message;
-            print("\n");
             begin
-#              printf("\n incoming:#{message}");
               parseMessage( Array.new( message));
               message.clear
-            rescue=> exe
-              raise;
+            rescue => exception
+              raise; #boom!
             end
-            
           end
         end
-#          print incmData.to_s();
-#          print("\n");
-        
-#        printf("\nthe read data are:#{incmData.unpack("C*")}\n");
-#        if incmData.unpack("C*").eql?(FRAME_DEL_B_A);
-##          printf("\nDISCARING FRAME\n");
-#          frameseen+=1;
-##        elsif incmData.unpack("C*").eql?(FRAME_ESCAPE_B_A);
-#        else
-#          if frameseen==2
-##            printf("\n\nThe received message is#{ byteDestuff( Array.new(dataA))}\n\n");
-#            dataA.clear;
-#            frameseen=0;
-#          else
-#            incmData.unpack("C*").each{ |elem|
-#              dataA.push(elem);
-##              printf("\ndata in dataArray are:#{data.inspect}")
-#            }
-#          end
-        end
+  end
 ##        $serialPort.flush_input();
 ##        $serialPort.flush_output();
-##        printf("\n#{incmData}\n");
-#      end
-#      $serialPort2 = Serial.new
-#      while true
-#        puts "func1 at: #{Time.now}"
-#        sleep(1);
-#      end
-    }; x.run;
+    }; slt.run;
   rescue
     $serialPort= nil;
     print("\nWARNING! Serial port (or at least something emulating it) is not availiable on this system,"\
@@ -228,6 +194,8 @@ def ParseMainInput(input)
   elsif input.to_i ==5
 #    print("\n4");
     _implCommand5();
+  elsif input.to_i == 6
+    _implCommand6();
   elsif input == "\n"
     print("\nType a supported command\n");
     PrintBasicMenu();
@@ -302,9 +270,9 @@ def SerialTxRawBin( input, array, line, bytestuff )
         printf("\nTransmission of #{i} bits, (#{i/8} bytes}) completed\n");
       end
     rescue => exception
-#      printf("\nnon-existant packet selected\n");
+      printf("\nnon-existant packet selected\n");
 #      puts exception.backtrace
-        raise
+#        raise
     end
   end
 end
@@ -493,12 +461,13 @@ def PrintBasicMenu()
   printf("--2.  See the contents of the messages in Bit String format\n");
   printf("--3.  See the contents of the messages in Hash data structure format (not very usefull)\n");
   printf("--4.  See the contents of the messages in raw binary format\n");
-  printf("--5.  Transmit the contents of the messages in Serial Line\n");
+  printf("--5.  Display packet titles\n");
+  printf("--6.  Transmit the contents of the messages in Serial Line\n");
   printf("Q|q.  To exit program\n");
-  printf("type your command input\n");
+  printf("type your command input...\n");
 end
 
-:private
+#:private
 def _implCommand1()
   
   printf("\n");
@@ -546,6 +515,17 @@ def _implCommand4()
 end
 
 def _implCommand5()
+  
+  printf("\n");
+  printf("You have loaded #{$indPacketsBinArray.size} packets, their titles are:\n");
+  $telecmdpackets.each_with_index { |tc, index|
+    print sprintf("--packet no: %1$02d is: %2$s\n", index+1, tc['name']);
+  }
+  print("\n");
+  
+end
+
+def _implCommand6()
   
   printf("\n");
   printf("You have loaded #{$indPacketsBinArray.size} packets.\n ");

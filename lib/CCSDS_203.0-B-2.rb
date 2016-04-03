@@ -161,7 +161,7 @@ $telecmdpackets = [{'name' => 'TestServicePacket',
                                                                 # zero, the field will be ignored and you'll end up with no payload on the message. 
 #                                              'defval' => 50999
 #                                              'defval' => 0b0000000100000000000000000000000000001000    #enter the packet payload here (binary or decimal values, for the moment)
-                                              'defval' => 0b0
+                                              'defval' => []
                                             },
                                             { 'name' => 'Spare', #used for padding, see page: 45
                                               'reprsize' => 0,
@@ -261,7 +261,7 @@ $telecmdpackets = [{'name' => 'TestServicePacket',
                                                                 # zero, the field will be ignored and you'll end up with no payload on the message. 
 #                                              'defval' => 50999
 #                                              'defval' => 0b0000000100000000000000000000000000001000    #enter the packet payload here (binary or decimal values, for the moment)
-                                              'defval' => 0b0000000100000000000000000000000000001111
+                                              'defval' => [1,0,0,0,15]
                                             },
                                             { 'name' => 'Spare', #used for padding, see page: 45
                                               'reprsize' => 0,
@@ -360,7 +360,7 @@ $telecmdpackets = [{'name' => 'TestServicePacket',
                                                                 # if you enter an array of values, then just don't put zero, if you leave it
                                                                 # zero, the field will be ignored and you'll end up with no payload on the message. 
 #                                              'defval' => 50999
-                                              'defval' => 0b0000000100000000000000000000000000001100    #enter the packet payload here (binary or decimal values, for the moment)
+                                              'defval' => [0,0,0,0,15]    #enter the packet payload here (binary or decimal values, for the moment)
                                             },
                                             { 'name' => 'Spare', #used for padding, see page: 45
                                               'reprsize' => 0,

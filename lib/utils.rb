@@ -63,6 +63,7 @@ def ClaimSerialPort( serialline )
 #        incmData = $serialPort.read(19);
 #        incmData = $serialPort.readchar;
         incmData = $serialPort.readbyte;
+        print incmData.chr; #print incomming data as ASCII char
         if frameseen >= 1
           message << incmData;
         end
@@ -162,21 +163,25 @@ def CreatePacketSegment( width, height )
   #return theArray;
 end
 
-def SaveTelecmdPacketFile(dir="./packets/packet.yml")
-  File.open(dir, "w") do |file|
-    file.write $telecmdpackets.to_yaml
-  end
-end
-
 #Returns the file a String
 def SLoadTelecmdPacketFFile(dir="./packets/packet.yml")
   File.read(dir);
 end
 
-#Returns the file a YAML
-def YLoadTelecmdPacketFFile(dir="./packets/packet.yml");
-  YAML::load_file(dir);
+#Returns the file as ruby's object
+def YLoadTelecmdPacketFFile(dir="./packets/", filename="");
+  YAML::load_file( dir.concat(filename)  );
 end
+
+
+def YSaveTelecmdPacketToFile(dir="./packets/", theArray)
+  theArray.each_with_index { |innerHash,index|   
+    File.open( dir.insert( (dir.length), (index+1).to_s.concat("__") ).concat( innerHash['name']).concat(".yml"), "w") do |file|
+      file.write innerHash.to_yaml
+    end
+    dir="./packets/";
+  }
+end 
 
 def ParseMainInput(input)
   if input.to_i == 1

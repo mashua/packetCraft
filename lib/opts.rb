@@ -48,8 +48,9 @@ require 'optparse'
 #ii)  :bytestuff --> true, or false, self-explanatory.
 #iii) :tx --> is the mode to transmit the packets. 'bin' transmits binary.
 #                                                  'ascii' transmits text.
-$cmdlnoptions = {} #initialy empty options hash.
+#iv)  :loadsource --> is the source for packet loading.
 
+$cmdlnoptions = {}
 
 def ParseOptions()  
   option_parser = OptionParser.new{ |opts|
@@ -82,40 +83,58 @@ def ParseOptions()
         $cmdlnoptions[:tx]= mode;        
       end
     }
-    opts.on("-h", "--help", "Prints this help") do
+    
+    opts.on("-l", "--load-source <disk|file>","\n\tMandatory argument. Set from where the packets will be loaded."\
+            " 'disk' to load packets from .yml files under #{File.dirname(__FILE__)}/packets/load/ directory. "\
+            " 'file' to load files from CCSDS_203.0-B-2.rb file."\
+            " if you don't specify the option, 'disk' will be used.")\
+    { |source|
+      if source=='disk'
+        $cmdlnoptions[:loadsource]= source;        
+      elsif source =='file'
+        $cmdlnoptions[:loadsource]= source;        
+      end
+    }
+    
+    opts.on("-h", "--help", "Prints this help") {
            puts opts
            exit(0);
-         end
-    
+    }
   }
-   option_parser.parse!
+  option_parser.parse!
    
   if $cmdlnoptions.empty?
-    printf("No arguments given, using defaults as: (see help with '-h' or '--help', for valid options)\n");
-    printf("--Serial port to be used for transmission is: /dev/ttyUSB0 (if exists)\n");    
-    printf("--Byte stuffing is turned on\n");
-    printf("--Transmit in binary format\n");
-    $cmdlnoptions[:seriaport]="/dev/ttyUSB0";
-    $cmdlnoptions[:bytestuff]=true;
-    $cmdlnoptions[:tx]="bin";
+    printf("No arguments given, using defaults. (see help with '-h' or '--help', for valid options)\n");
+  end
+  
+  printf("Executing with the following options:\n");
+    
+  if $cmdlnoptions.has_key?(:serialport)
+    printf("--Serial port to be used for transmission is: #{$cmdlnoptions[:serialport]} (if exists)\n");
   else
-    printf("Executing with the following options:\n");
-    if $cmdlnoptions[:serialport]
-      printf("--Serial port to be used for transmission is: #{$cmdlnoptions[:serialport]} (if exists)\n");
-    end
-    if $cmdlnoptions.has_key?(:bytestuff);
-      printf("--Byte stuffing is turned #{$cmdlnoptions[:bytestuff]?"on":"off"}\n");
-    else
-      $cmdlnoptions[:bytestuff]=true;
-#      printf("--Byte stuffing is turned #{$cmdlnoptions[:bytestuff]?"on":"off"}\n");
-      printf("--Byte stuffing is turned on\n");
-    end
-    if $cmdlnoptions[:tx]
-      printf("--Transmit in binary format\n");
-    else
-      $cmdlnoptions[:tx]="bin";
-      printf("--Transmit in binary format\n");
-    end
+    $cmdlnoptions[:serialport]="/dev/ttyUSB0";
+    printf("-- USING DEFAULT: Serial port to be used for transmission is: #{$cmdlnoptions[:serialport]} (if exists)\n");
+  end
+    
+  if $cmdlnoptions.has_key?(:bytestuff);
+    printf("--Byte stuffing is turned #{$cmdlnoptions[:bytestuff]?"on":"off"}\n");
+  else
+    $cmdlnoptions[:bytestuff]=true;
+    printf("-- USING DEFAULT: Byte stuffing is turned on\n");
+  end
+  
+  if $cmdlnoptions.has_key?(:loadsource)
+    printf("--Loading packets from: #{$cmdlnoptions[:loadsource]}\n");
+  else
+    $cmdlnoptions[:loadsource]="disk";
+    printf("-- USING DEFAULT: Packets loaded from: #{$cmdlnoptions[:loadsource]}\n");
+  end
+    
+  if $cmdlnoptions.has_key?(:tx)
+    printf("--Transmit in binary format\n");
+  else
+    $cmdlnoptions[:tx]="bin";
+    printf("-- USING DEFAULT: Transmit in binary format\n");
+  end
     
   end
-end

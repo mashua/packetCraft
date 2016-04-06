@@ -47,7 +47,7 @@ require 'yaml'
 require_relative 'utils'
 require_relative 'CCSDS_203.0-B-2'
 
-#$telecmdpackets = YLoadTelecmdPacketFFile();
+$telecmdpackets = Array.new();
 
 #holds a reference to an array who contains the individual
 #packets string representation, like: parsed yaml
@@ -102,6 +102,17 @@ $crosspacketBlock = Proc.new{ |theHash, level|
     end
   }
 };
+
+entries = Dir.entries( File.dirname(__FILE__).concat("/packets/load/"));
+entries.delete('.');
+entries.delete('..');
+entries.sort_by! { |a| a[0] }
+
+entries.each_with_index { |item,index|
+#  unless item == '.' || item == '..'
+    $telecmdpackets << YLoadTelecmdPacketFFile( File.dirname(__FILE__).concat("/packets/load/") , item);
+#  end
+}
 
 $telecmdpackets.each { |innerHash|
   $indPacketsBinStrArray<<Array.new();#new array to hold reference to the new binary string representation of the packet.

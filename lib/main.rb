@@ -48,6 +48,7 @@ require_relative 'craft'
 #byteDestuff(temp_ar);
 
 ParseOptions();
+
 ClaimSerialPort( $cmdlnoptions[:serialport]);
 
 printf("\n---Loaded #{$pckCount} packets---\n");

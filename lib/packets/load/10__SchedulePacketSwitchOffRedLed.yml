@@ -24,7 +24,7 @@ has:
       defval: 3
     - name: SequenceCount
       reprsize: 14
-      defval: 6
+      defval: 66
   - name: PacketLength
     reprsize: 16
     defval: 66

@@ -1,5 +1,5 @@
 ---
-name: SchedulePacketLightUpGreenLed
+name: DeleteSchedulePacket
 has:
 - name: PacketHeader
   has:
@@ -24,7 +24,7 @@ has:
       defval: 3
     - name: SequenceCount
       reprsize: 14
-      defval: 64
+      defval: 6
   - name: PacketLength
     reprsize: 16
     defval: 66
@@ -46,7 +46,7 @@ has:
       defval: 11
     - name: Service Subtype
       reprsize: 8
-      defval: 4
+      defval: 5
     - name: SourceID
       reprsize: 8
       defval: 6
@@ -54,37 +54,12 @@ has:
       reprsize: 0
       defval: 0
   - name: ApplicationData
-    reprsize: 232
+    reprsize: 32
     defval:
     - 1
     - 1
-    - 0
-    - 0
-    - 1
-    - 4
-    - 0
-    - 0
-    - 0
-    - 20
-    - 0
-    - 33
-    - 24
-    - 1
-    - 192
     - 185
-    - 0
-    - 10
-    - 16
-    - 8
     - 1
-    - 6
-    - 1
-    - 0
-    - 0
-    - 0
-    - 12
-    - 0
-    - 120
   - name: Spare
     reprsize: 0
     defval: 0

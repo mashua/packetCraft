@@ -63,25 +63,37 @@ def ClaimSerialPort( serialline )
 #        incmData = $serialPort.read(19);
 #        incmData = $serialPort.readchar;
         incmData = $serialPort.readbyte;
-        print incmData.chr; #print incomming data as ASCII char
-        if frameseen >= 1
-          message << incmData;
+#        print incmData.chr; #print incomming data as ASCII char
+        if incmData == FRAME_ESCAPE_H
+          print("TIME TO MEET YOUR MAKER\n");
+          Thread.stop();
         end
         if incmData == FRAME_DEL_H
-          frameseen+=1;
-          if frameseen==2
-            #end frame has come, parse the message array.
-            #reset for the other round.
-            frameseen=0;
-            begin
+          if frameseen <= 1
+            frameseen+=1;
+            message << incmData;
+          end
+          if frameseen == 2
+#             begin
+#              print("\n");
+#              print message;
               parseMessage( Array.new( message));
               message.clear
-            rescue => exception
-              raise; #boom!
-            end
+              frameseen=0;
+#            rescue => exception
+#              raise exception #boom!
+#            end
+          end
+        elsif
+#          unless frameseen<=1 && frameseen !=2
+          if frameseen >=1 && frameseen <2
+            message << incmData;
+          else
+            print incmData.chr;
           end
         end
-  end
+      end#loop ends here
+
 ##        $serialPort.flush_input();
 ##        $serialPort.flush_output();
     }; slt.run;
@@ -95,6 +107,8 @@ end
 # Parses an array containing (hopefully) a ECSS-E-70-41A
 # message.
 def parseMessage(theArray)
+#  print("\n");
+#  print theArray;
     message = Array.new();
     theArray.each { |elem| #elem is Fixnum 
       if elem == FRAME_DEL_H
@@ -103,7 +117,12 @@ def parseMessage(theArray)
         message.push( sprintf("%08b",elem).split(//).map{ |elem| elem.to_i } );
       end
     }
+#    print("#{message.length}\n");
+#  print message;
     message.flatten!(1);
+#    print("\n");
+#    print("#{message.length}\n");
+#  print message;
     breakECSS(message);
 #    print message.length;
 #    print("\n");

@@ -40,11 +40,11 @@
 #
 
 FRAME_DEL_H = 0x7E
-FRAME_DEL_B = 0b01111110
-FRAME_DEL_B_A = Array.[](0,1,1,1,1,1,1,0)
+#FRAME_DEL_B = 0b01111110
+#FRAME_DEL_B_A = Array.[](0,1,1,1,1,1,1,0)
 FRAME_ESCAPE_H = 0x7D
-FRAME_ESCAPE_B = 0b01111101
-FRAME_ESCAPE_B_A = Array.[](0,1,1,1,1,1,0,1)
+#FRAME_ESCAPE_B = 0b01111101
+#FRAME_ESCAPE_B_A = Array.[](0,1,1,1,1,1,0,1)
 $serialPort
 
 def ClaimSerialPort( serialline )
@@ -265,33 +265,39 @@ def SerialTxRawBin( input, array, line, bytestuff )
   if input == "\n"
     if bytestuff==TRUE #tx all packets, bytestuff on
       array.each{ |elem|
-        stuffed_array = byteStuff(Array.new(elem));
+        stuffed_array = byteStuff( bitsToBytes( Array.new(elem)));
         i+=stuffed_array.length;
-        $serialPort.write(bitsToBytes(stuffed_array).pack("C*") );
+#        $serialPort.write( bitsToBytes( stuffed_array).pack("C*") );
+        $serialPort.write( stuffed_array.pack("C*") );
         sleep(1.5);
       }
-      printf("\nTransmission of #{i} bits, (#{i/8} bytes) completed\n");
+#      printf("\nTransmission of #{i} bits, (#{i/8} bytes) completed\n");
+      printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed\n");
     elsif    #tx all packets, bytestuff off
       array.each{ |elem|
         i+=elem.length;
         $serialPort.write( bitsToBytes(elem).pack("C*") );
         sleep(1.5);
       }
-      printf("\nTransmission of #{i} bits, (#{i/8} bytes) completed\n");
+#      printf("\nTransmission of #{i} bits, (#{i/8} bytes) completed\n");
+      printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed\n");
     end
   else 
     begin  
       if bytestuff==TRUE #tx a specific packet, bytestuff on
-        stuffed_array = byteStuff(Array.new(array[(input.to_i)-1]));
+        stuffed_array = byteStuff( bitsToBytes( Array.new(array[(input.to_i)-1])));
         i+=stuffed_array.length;
-          printArrayBitsOnBytesSeg(stuffed_array);
-        $serialPort.write(bitsToBytes(stuffed_array).pack("C*")); 
-        printf("\nTransmission of #{i} bits, (#{i/8} bytes) completed\n");
+#          printArrayBitsOnBytesSeg( stuffed_array);
+#        $serialPort.write( bitsToBytes( stuffed_array).pack("C*")); 
+        $serialPort.write( stuffed_array.pack("C*"));
+#        printf("\nTransmission of #{i} bits, (#{i/8} bytes) completed\n");
+        printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed\n");
       else #tx a specific packet, bytestuff off
         txarray = array[(input.to_i)-1];
         i+=txarray.length;
-        $serialPort.write(bitsToBytes(txarray).pack("C*"));
-        printf("\nTransmission of #{i} bits, (#{i/8} bytes}) completed\n");
+        $serialPort.write( bitsToBytes(txarray).pack("C*"));
+#        printf("\nTransmission of #{i} bits, (#{i/8} bytes}) completed\n");
+        printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed\n");
       end
     rescue => exception
       printf("\nnon-existant packet selected\n");
@@ -310,8 +316,8 @@ def printArrayBitsOnBytesSeg(theArray)
   end
 end
 
-#The frame boundary octet is 01111110, (0x7E in hexadecimal notation)
-#A "control escape octet", has the bit sequence '01111101', (0x7D hexadecimal).
+#The "frame boundary" octet is 01111110, (0x7E in hexadecimal notation)
+#A "control escape octet", has the bit sequence '01111101', (0x7D in hexadecimal notation).
 #If either of these two octet appears in the transmitted data, an escape octet is sent, 
 #followed by the original data octet with bit 5 inverted.
 #For example, the data sequence "01111110" (0x7E hex)
@@ -319,9 +325,9 @@ end
 #Procedure is as: inject into start and end of the array the 0x7E flag.
 #Parse the bit array to find patterns of 0x7E or 0x7D in the data.
 #If found on the starting position of the data enter: 0x7D (escape octet)
-#and the value of 5E, or 5D. The receiving application must detect the espace octet (0x7D),
+#and the value of 5E for 7E, or 5D for 7D. The receiving application must detect the escape octet (0x7D),
 #discard it, and then on the next received octet to shift (invert) the fifth bit.
-def byteStuff( array )
+def byteStuff( theByteArray )
 #  printf("\n\nThe initial array is: #{array}, with length:#{array.length}\n\n");
 # frame delimeters 0x7E, 0xb01111110, '~'
 # escape delimeter 0x7D, 0xb1111101, '}'
@@ -329,96 +335,55 @@ def byteStuff( array )
 #FRAME_DEL_B = 0b01111110
 #FRAME_ESCAPE_H = 0x7D
 #FRAME_ESCAPE_B = 0b01111101
-#  print $indPacketsBinArray[0];
-#    printf("\n\n");
-#  array = $indPacketsBinArray[0];
-#  printf("\n Initial array is:\n #{array}, and length is: #{array.length}\n");
-  fetch = 0;
-#  iniarraylen = array.length; #keep the initial array length, because it might change
-#  print("\n current array length is:#{array.length}\n")
-#  for times in 1..(array.length/8)
-
-while fetch+7 <= array.length do 
-#     print("\n current array length is:#{array.length}\n")
-#    printf("Fetch time #{times}, and fetch is from: #{fetch} to #{fetch+7} \n")
-#    tempseg = array.values_at( fetch..(times*8)-1 );
-    tempseg = array.values_at( fetch..((fetch+8)-1) );
-#    printf("\n");
-#    print tempseg; 0b 01111110 010 01111101 01111110 010 01111101 01111110 010 01111101
-#    printf("\n\n");
-    if tempseg.eql?(FRAME_DEL_B_A)
-#      printf("\nFrame delimeter found in data, at offset #{fetch}\n");      
-      #add an escape 0x7D and the data which are in the tempseg, with 5thbit inverted
-      array[fetch,0] = FRAME_ESCAPE_B_A; #append the escape bit sequence (call with length 0)      
-      array[fetch+8,8] = [0,1,0,1,1,1,1,0]; #replace the data found with bit 5 inverted
-#      printf("\n #{array.values_at(fetch..fetch+15)} \n");
-      fetch+=15;
-#      printf("\n\nthe new array is: #{array}\n");
-    elsif tempseg.eql?(FRAME_ESCAPE_B_A)
-#      printf("\nEscape delimeter found in data, at offset #{fetch}\n");
-      #add an escape 0x7D and the data which are in the tempseg, with 5thbit inverted
-      array[fetch,0] = FRAME_ESCAPE_B_A; #append the escape bit sequence (call with length 0)      
-      array[fetch+8,8] = [0,1,0,1,1,1,0,1]; #replace the data found with bit 5 inverted
-#      printf("\n #{array.values_at(fetch..fetch+15)} \n");
-      fetch+=15;
-#      printf("\n\nthe new array is: #{array}\n");
+  theByteArray.each_with_index { |elem,index|
+    
+    case elem
+    when 0x7E #-->5E
+      theByteArray[index]=0x5E;
+      theByteArray[index,0]=0x7D;
+    when 0x7D #-->5D
+      theByteArray[index]=0x5D;
+      theByteArray[index,0]=0x7D;
     end
-    fetch+=1;
-  end#while ends here
-#  print("\nmodified array length is:#{array.length}\n");
-#  printf("\nfinal array is:\n");
-#  print array;
-  array[0,0] = FRAME_DEL_B_A #append the forward array frame.
-  array[array.length,0] = FRAME_DEL_B_A #append the end array frame.
-#  printf("\n Stuffed array is:\n #{array}, and length is: #{array.length}\n");
-  return array;
+  }
+  #frame the boundaries it with 0x7E    
+  theByteArray[0,0] = 0x7E;
+  theByteArray << 0x7E;
+  return theByteArray;
 end
 
 #the reverse of byte stuffing.
 #detect the escape sequences in the data and discard them.
 #then shift (invert) the fifth bit of the next octet.
 #the given array is already without the header/tail frame delimeters
-def byteDestuff( array )  
+def byteDestuff( theByteArray )  
 # frame delimeters 0x7E, 0xb01111110, '~'
 # escape delimeter 0x7D, 0xb1111101, '}'
 #FRAME_DEL_H = 0x7E
 #FRAME_DEL_B = 0b01111110
 #FRAME_ESCAPE_H = 0x7D
 #FRAME_ESCAPE_B = 0b01111101
-  pos = 0;
-#  printf("\nArray before destuff is:\n #{array}, with size: #{array.length}\n");
-  #delete the header flag
-#    array.slice!(0,8);
-  #delete the tail flag
-#    array.slice!(array.length-8, 8);
-#  printf("\nArray after flag destuff is:\n #{array}, with size: #{array.length}\n");
-  
-while pos+7 <= array.length do
-    tempseg = array.values_at( pos..(pos+8)-1 );
-    if tempseg.eql?(FRAME_ESCAPE_B_A)
-#      printf("\nEscape delimeter found in data, at offset #{pos}\n"); 
-#      printf("\nto remove is: #{array.values_at(pos..pos+7)}, and length is: #{array.length}\n");
-      #remove the escape 0x7D from the array and invert the fifth bit of the next 8 bits data.
-      array.slice!(pos,8) #remove the escape bit sequence      
-#      printf("\narray is: #{array.values_at(pos..pos+7)}, and length is: #{array.length} \n");
-      array[pos+2] = 1; #replace the data found with bit 5 inverted
-#      printf("\narray is: #{array.values_at(pos..pos+7)}, and length is: #{array.length} \n");
-#      printf("\n #{array.values_at(fetch..fetch+15)} \n");
-      pos+=7;
-#      printf("\nthe new array is: #{array}, and length is: #{array.length}\n");
+
+  #un-frame the boundaries from 0x7E
+  theByteArray.delete_at(0);
+  theByteArray.pop();
+  theByteArray.each_with_index { |elem,index|
+      
+    case elem
+    when 0x7D
+      theByteArray.delete_at(index);
+      theByteArray[index]^=0b00100000
     end
-    pos+=1;
-  end#while ends here
-#   printf("\nfinal array after destuff is: #{array}, and length is: #{array.length}\n");
-  return array;
+  }
+  return theByteArray;
 end
 
 # Accepts an array of bits, and returns an array of bytes.
-def bitsToBytes(theArray)
+def bitsToBytes( thebitArray)
   fortx = Array.new();
   fetch = 0;
-  while fetch+7 <= theArray.length do
-    seg = theArray[fetch,(8)];
+  while fetch+7 <= thebitArray.length do
+    seg = thebitArray[fetch,(8)];
     fortx<<makeByte(seg);
     fetch+=8; #go to the start of next byte.
   end

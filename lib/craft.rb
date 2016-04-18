@@ -39,7 +39,8 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #---------------------------------------------------------------------------
 
-require 'serialport'
+#require 'serialport'
+#require 'rubyserial'
 #require 'curses'
 #require 'xmlsimple'
 require 'yaml'
@@ -189,3 +190,6 @@ $indPacketsBinArray.each { |packetArray|
 #print("\n");
 #printf("the array lenght after is:#{packetArray.length}\n");
 }
+#print $indPacketsBinStrArray
+#print $indPacketsBinArray[0].length;
+#print("\n");

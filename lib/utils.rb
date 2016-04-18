@@ -49,54 +49,8 @@ $serialPort
 
 def ClaimSerialPort( serialline )
   begin
-    $serialPort = SerialPort.new(serialline, 9600, 8, 1, SerialPort::NONE);
-    #Spawn the serial line listener thread.
-    #a call to Thread.sleep() is not needed because the
-    #loop is blocking at its own, at the Serial.read_whatever() call.
-    slt = Thread.new() {      
-      $serialPort.read_timeout=0; #read data as soon they appear on the rx line.
-      message = Array.new();
-      frameseen=0;
-      loop do #keep polling the rx line.
-              #here standard IO calls can be used on the $serialPort
-              
-#        incmData = $serialPort.read(19);
-#        incmData = $serialPort.readchar;
-        incmData = $serialPort.readbyte;
-#        print incmData.chr; #print incomming data as ASCII char
-        if incmData == FRAME_ESCAPE_H
-          print("TIME TO MEET YOUR MAKER\n");
-          Thread.stop();
-        end
-        if incmData == FRAME_DEL_H
-          if frameseen <= 1
-            frameseen+=1;
-            message << incmData;
-          end
-          if frameseen == 2
-#             begin
-#              print("\n");
-#              print message;
-              parseMessage( Array.new( message));
-              message.clear
-              frameseen=0;
-#            rescue => exception
-#              raise exception #boom!
-#            end
-          end
-        elsif
-#          unless frameseen<=1 && frameseen !=2
-          if frameseen >=1 && frameseen <2
-            message << incmData;
-          else
-            print incmData.chr;
-          end
-        end
-      end#loop ends here
-
-##        $serialPort.flush_input();
-##        $serialPort.flush_output();
-    }; slt.run;
+    $serialPort = SerialPort.new( serialline, 9600, 8, 1, SerialPort::NONE);
+#    $serialPort = Serial.new serialline, 9600 
   rescue
     $serialPort= nil;
     print("\nWARNING! Serial port (or at least something emulating it) is not availiable on this system,"\
@@ -106,13 +60,13 @@ end
 
 # Parses an array containing (hopefully) a ECSS-E-70-41A
 # message.
-def parseMessage(theArray)
+def parseMessage( theArray)
 #  print("\n");
 #  print theArray;
     message = Array.new();
     theArray.each { |elem| #elem is Fixnum 
       if elem == FRAME_DEL_H
-        next #AKA, waste cycles
+        next #AKA, waste cycles, here call HLDLC Deframe when properly done.
       else 
         message.push( sprintf("%08b",elem).split(//).map{ |elem| elem.to_i } );
       end
@@ -123,26 +77,17 @@ def parseMessage(theArray)
 #    print("\n");
 #    print("#{message.length}\n");
 #  print message;
-    breakECSS(message);
+    if message.length < 96 #not equal due to test service 
+      printf("a short message has come...#{message.length}\n")
+    else
+      printECSS( Array.new(message));
+      breakECSStoYAML( Array.new(message));
+    end
 #    print message.length;
 #    print("\n");
-#    message.each { |innerArray|
-#      print innerArray
-#      innerArray.flat
-#      messageBits.push(innerArray.to_s(2).split(//).map{|bit| bit.to_i});
-#    }
-    
-#  the.split(//).map{|elem| elem.to_i}
-#print messageBits;
-#    print("\n#{messageBits.length}");
-#  print theArray[0].class
-#  print theArray.split(',').map { |elem| elem.to_i  }
-
-#  print("\n");
-#print("\n#{the.length}"); 
 end
 
-def breakECSS(theArray)
+def printECSS( theArray)
   
   version_number = makeByte( theArray[0,3]);
   type = makeByte( theArray[3,1]);
@@ -151,28 +96,90 @@ def breakECSS(theArray)
   sequence_flags = makeByte( theArray[16,2]);
   sequence_count = makeByte( theArray[18,14]);
   packet_length = makeByte( theArray[32,16]); #+1 octet
+  packet_length += 1; #plus 1 octet
+  packet_length *= 8; #bits number
+  packet_length -= 16+32 #remove data field header, crc bits
+  #
   ccsds_secondary_header_flag = makeByte( theArray[48,1]);
   tc_packet_pus_version_number = makeByte( theArray[49,3]);
   ack = makeByte( theArray[52,4]);
   service_type = makeByte( theArray[56,8]);
   service_subtype = makeByte( theArray[64,8]);
   source_id = makeByte( theArray[72,8]);
-  
-  packet_length += 1; #plus 1 octet
-  packet_length *= 8; #bits number
-  packet_length -= 16+32 #remove data field header, crc bits
-#  application_data = theArray[80,packet_length*8];
+  #
+  #  application_data = theArray[80,packet_length*8];
   application_data = bitsToBytes( theArray[80,packet_length]);
 #  application_data = bitsToBytes( theArray[80, theArray.length - 15]);
   checksum = CRC8(theArray, theArray.length-16, theArray.length);
-  
+  #
   print("\n\n");
   print sprintf("|--APID--|--SeqFlags--|--SeqCount--|--Ack--|--SerType--|--SubSerType--|--SourceID--|--ApData--|\n");
   print sprintf("|%01$8s|%02$12s|%03$12s|%04$7s|%05$11s|%06$14s|%07$12s|%08$10s|\n",
     application_process_id.to_s.center(8), sequence_flags.to_s.center(8), sequence_count.to_s.center(8), ack.to_s.center(7), 
     service_type.to_s.center(11), service_subtype.to_s.center(14), source_id.to_s.center(12), application_data.to_s.center(10));
   print sprintf("|--------|------------|------------|-------|-----------|--------------|------------|\n");
+  #
+end
+
+def breakECSStoYAML( theArray)
   
+  tc_tm_for_server = give_empty_tc_tm_yaml();
+  
+  version_number = makeByte( theArray[0,3]);
+  type = makeByte( theArray[3,1]);
+  data_field_header_flag = makeByte( theArray[4,1]);
+  application_process_id = makeByte( theArray[5,11]);
+  sequence_flags = makeByte( theArray[16,2]);
+  sequence_count = makeByte( theArray[18,14]);
+  packet_length = makeByte( theArray[32,16]); #+1 octet
+  packet_length += 1; #plus 1 octet
+  packet_length *= 8; #bits number
+  packet_length -= 16+32 #remove data field header, crc bits
+  tc_tm_for_server["has"][0]['has'][0]['has'][0]['defval']=version_number;
+  tc_tm_for_server["has"][0]['has'][0]['has'][1]['defval']=type;
+  tc_tm_for_server["has"][0]['has'][0]['has'][2]['defval']=data_field_header_flag;
+  tc_tm_for_server["has"][0]['has'][0]['has'][3]['defval']=application_process_id;
+  
+  tc_tm_for_server["has"][0]['has'][1]['has'][0]['defval']=sequence_flags;
+  tc_tm_for_server["has"][0]['has'][1]['has'][1]['defval']=sequence_count;
+  
+  tc_tm_for_server["has"][0]['has'][2]['defval']=packet_length;
+  
+  ccsds_secondary_header_flag = makeByte( theArray[48,1]);
+  tc_packet_pus_version_number = makeByte( theArray[49,3]);
+  ack = makeByte( theArray[52,4]);
+  service_type = makeByte( theArray[56,8]);
+  service_subtype = makeByte( theArray[64,8]);
+  source_id = makeByte( theArray[72,8]);
+  tc_tm_for_server["has"][1]['has'][0]['has'][0]['defval']=ccsds_secondary_header_flag;
+  tc_tm_for_server["has"][1]['has'][0]['has'][1]['defval']=tc_packet_pus_version_number;
+  tc_tm_for_server["has"][1]['has'][0]['has'][2]['defval']=ack;
+  tc_tm_for_server["has"][1]['has'][0]['has'][3]['defval']=service_type;
+  tc_tm_for_server["has"][1]['has'][0]['has'][4]['defval']=service_subtype;
+  tc_tm_for_server["has"][1]['has'][0]['has'][5]['defval']=source_id;
+  #this is the 'Spare' with repsize = 0
+  tc_tm_for_server["has"][1]['has'][0]['has'][6]['defval']=0;
+  
+  #  application_data = theArray[80,packet_length*8];
+  application_data = bitsToBytes( theArray[80,packet_length]);
+#  application_data = bitsToBytes( theArray[80, theArray.length - 15]);
+  checksum = CRC8(theArray, theArray.length-16, theArray.length);
+  tc_tm_for_server["has"][1]['has'][1]['defval']=application_data;
+  #this is the 'Spare' with repsize = 0
+  tc_tm_for_server["has"][1]['has'][2]['defval']=0;
+  tc_tm_for_server["has"][1]['has'][3]['defval']=checksum;
+
+  $server_to_client_q.enq( tc_tm_for_server.to_yaml);
+#  print tc_tm_for_server.to_yaml;
+  
+#  $mutex_obj.lock();
+#  print("\n\n");
+#  print sprintf("|--APID--|--SeqFlags--|--SeqCount--|--Ack--|--SerType--|--SubSerType--|--SourceID--|--ApData--|\n");
+#  print sprintf("|%01$8s|%02$12s|%03$12s|%04$7s|%05$11s|%06$14s|%07$12s|%08$10s|\n",
+#    application_process_id.to_s.center(8), sequence_flags.to_s.center(8), sequence_count.to_s.center(8), ack.to_s.center(7), 
+#    service_type.to_s.center(11), service_subtype.to_s.center(14), source_id.to_s.center(12), application_data.to_s.center(10));
+#  print sprintf("|--------|------------|------------|-------|-----------|--------------|------------|\n");
+#  $mutex_obj.unlock();
 end
 
 #Returns a two-dimensional array
@@ -191,7 +198,6 @@ end
 def YLoadTelecmdPacketFFile(dir="./packets/", filename="");
   YAML::load_file( dir.concat(filename)  );
 end
-
 
 def YSaveTelecmdPacketToFile(dir="./packets/", theArray)
   theArray.each_with_index { |innerHash,index|   
@@ -220,6 +226,8 @@ def ParseMainInput(input)
     _implCommand5();
   elsif input.to_i == 6
     _implCommand6();
+  elsif input.to_i == 7
+    _implCommand7();
   elsif input == "\n"
     print("\nType a supported command\n");
     PrintBasicMenu();
@@ -255,7 +263,7 @@ end
 #array, holds the array of packet messages.
 #line, holds the Serial line to use for tx-ition
 #bytestuff, true for byte stuffing before tx-ition, false else.
-def SerialTxRawBin( input, array, line, bytestuff )
+def SerialTxRawBin( sleep_t, input, array, line, bytestuff )
   stuffed_array = Array.new();
   i=0;
   if line == nil
@@ -268,16 +276,31 @@ def SerialTxRawBin( input, array, line, bytestuff )
         stuffed_array = byteStuff( bitsToBytes( Array.new(elem)));
         i+=stuffed_array.length;
 #        $serialPort.write( bitsToBytes( stuffed_array).pack("C*") );
-        $serialPort.write( stuffed_array.pack("C*") );
-        sleep(1.5);
+#$mutex_obj.lock();
+        if sleep_t == 0
+          $serialPort.write( stuffed_array.pack("C*") );
+        else
+          $serialPort.write( stuffed_array.pack("C*") );
+          sleep(sleep_t);
+        end
+#$mutex_obj.unlock();
+#        sleep(0.1);
       }
 #      printf("\nTransmission of #{i} bits, (#{i/8} bytes) completed\n");
       printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed\n");
     elsif    #tx all packets, bytestuff off
       array.each{ |elem|
         i+=elem.length;
-        $serialPort.write( bitsToBytes(elem).pack("C*") );
-        sleep(1.5);
+#$mutex_obj.lock();if sleep_t == 0
+        if sleep_t == 0
+          $serialPort.write( stuffed_array.pack("C*") );
+        else
+          $serialPort.write( stuffed_array.pack("C*") );
+          sleep(sleep_t);
+        end
+#        $serialPort.write( bitsToBytes(elem).pack("C*") );
+#$mutex_obj.unlock();
+#        sleep(1.5);
       }
 #      printf("\nTransmission of #{i} bits, (#{i/8} bytes) completed\n");
       printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed\n");
@@ -286,16 +309,35 @@ def SerialTxRawBin( input, array, line, bytestuff )
     begin  
       if bytestuff==TRUE #tx a specific packet, bytestuff on
         stuffed_array = byteStuff( bitsToBytes( Array.new(array[(input.to_i)-1])));
+#        print("\n\n#{Array.new(array[(input.to_i)-1])}")
+#        stuffed_array = byteStuff(Array.new(array[(input.to_i)-1]));
         i+=stuffed_array.length;
 #          printArrayBitsOnBytesSeg( stuffed_array);
 #        $serialPort.write( bitsToBytes( stuffed_array).pack("C*")); 
-        $serialPort.write( stuffed_array.pack("C*"));
+         print("Tx: #{stuffed_array}\n")
+#$mutex_obj.lock();
+        if sleep_t == 0
+          $serialPort.write( stuffed_array.pack("C*") );
+        else
+          $serialPort.write( stuffed_array.pack("C*") );
+          sleep(sleep_t);
+        end
+#        $serialPort.write( stuffed_array.pack("C*"));
+#$mutex_obj.unlock();
 #        printf("\nTransmission of #{i} bits, (#{i/8} bytes) completed\n");
         printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed\n");
       else #tx a specific packet, bytestuff off
         txarray = array[(input.to_i)-1];
         i+=txarray.length;
-        $serialPort.write( bitsToBytes(txarray).pack("C*"));
+#$mutex_obj.lock();
+        if sleep_t == 0
+          $serialPort.write( stuffed_array.pack("C*") );
+        else
+          $serialPort.write( stuffed_array.pack("C*") );
+          sleep(sleep_t);
+        end
+#        $serialPort.write( bitsToBytes(txarray).pack("C*"));
+#$mutex_obj.unlock();
 #        printf("\nTransmission of #{i} bits, (#{i/8} bytes}) completed\n");
         printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed\n");
       end
@@ -420,7 +462,7 @@ end
 # Extract a byte from an array witch have 8 distinct bit as elements.
 # Returns a byte
 def makeByte(theArraySeg)
-#  print theArraySeg
+
   theByte = 0b0;
 #  print("\n");
   theArraySeg.each{ |item|
@@ -452,6 +494,7 @@ def PrintBasicMenu()
   printf("--4.  See the contents of the messages in raw binary format\n");
   printf("--5.  Display packet titles\n");
   printf("--6.  Transmit the contents of the messages in Serial Line\n");
+  printf("--7.  Transmit the contents of the messages in Serial Line in a Loop\n");
   printf("Q|q.  To exit program\n");
   printf("type your command input...\n");
 end
@@ -520,7 +563,25 @@ def _implCommand6()
   printf("You have loaded #{$indPacketsBinArray.size} packets.\n ");
   printf("To transmit an individual packet type from: 1 to #{$indPacketsBinArray.size}, or press 'enter' to transmit them all.\n");
   inp=gets;
-  SerialTxRawBin(inp, $indPacketsBinArray, $cmdlnoptions[:serialport], $cmdlnoptions[:bytestuff] );
+  sleep_t = $cmdlnoptions[:f].to_f;
+  SerialTxRawBin( sleep_t, inp, $indPacketsBinArray, $cmdlnoptions[:serialport], $cmdlnoptions[:bytestuff] );
   print("\n");
+  
+end
+
+def _implCommand7()
+  
+  printf("\n");
+  printf("You have loaded #{$indPacketsBinArray.size} packets.\n ");
+  printf("To transmit an individual packet type from: 1 to #{$indPacketsBinArray.size}, or press 'enter' to transmit them all.\n");
+  inp=gets;
+  sleep_t = $cmdlnoptions[:f].to_f;
+  
+  $indPacketsBinArray.each{
+    loop do
+      SerialTxRawBin( sleep_t, inp, $indPacketsBinArray, $cmdlnoptions[:serialport], $cmdlnoptions[:bytestuff] );
+      sleep(sleep_t);
+    end
+  }
   
 end

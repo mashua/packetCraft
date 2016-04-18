@@ -55,15 +55,45 @@ $cmdlnoptions = {}
 def ParseOptions()  
   option_parser = OptionParser.new{ |opts|
     
-    opts.on("-s","--serial-port <serial port>","\n\tMandatory argument. Give:"\
+    opts.on("-s","--serial-port 'SERIAL PORT'","\n\tMandatory argument. Give:"\
             " /dev/ttyUSB*, or COM*, where '*' is a number to designate the"\
-            " serial port to transmit on.")\
+            " serial port to transmit on.\n")\
     { |port|
       $cmdlnoptions[:serialport] = port;
     }
     
-    opts.on("-b", "--byte-stuff <on|off>","\n\tMandatory argument. Turn byte (octet) stuffing on or off."\
-            " Applicable only when transmiting on serial ports. By default, turned on.")\
+    opts.on("-m","--telecmd-server 'PORT NUMBER'","\n\tOptional argument."\
+            " The port where the Telecommand acceptance server will listen.\n")\
+    { |m|
+      if m != nil
+        $cmdlnoptions[:m]= m; 
+      else
+        $cmdlnoptions[:m]= nil;
+     end
+    }
+    
+    opts.on("-n", "--telemetry-server 'PORT NUMBER'","\n\tOptional argument."\
+            " The port where the Telemetry packets will be sent.\n")\
+    { |n|
+      if n != nil
+        $cmdlnoptions[:n]= n; 
+      else
+        $cmdlnoptions[:n]= nil;
+     end
+    }
+    
+    opts.on("-f","--transmit-interval 'SECONDS'","\n\tMandatory argument."\
+            " The interval between packet transmission on the serial line.\n")\
+    { |f|
+      if f != nil
+        $cmdlnoptions[:f]= f.to_f; #TODO add exception handler for non-numbers.
+      else
+        $cmdlnoptions[:f]= 1;
+     end
+    }
+    
+    opts.on("-b", "--byte-stuff 'on|off'","\n\tMandatory argument. Turn byte (octet) stuffing on or off."\
+            " Applicable only when transmiting on serial ports. \n\tBy default, turned on.\n")\
     { |onoff|
       if onoff=='on'
         $cmdlnoptions[:bytestuff]= true; 
@@ -72,10 +102,10 @@ def ParseOptions()
      end
     }
     
-    opts.on("-t", "--tx-mode <bin|ascii>","\n\tMandatory argument. Set the mode to use."\
+    opts.on("-t", "--tx-mode 'bin|ascii'","\n\tMandatory argument. Set the mode to use."\
             " 'bin' for binary transmition, 'ascii' for text transmition. "\
-            " Applicable only when transmiting on serial ports. By default, binary is selected."\
-            " Currently setting this has no effect, only binary is supported.")\
+            " \n\tApplicable only when transmiting on serial ports. By default, binary is selected."\
+            " \n\tCurrently setting this has no effect, only binary is supported.\n")\
     { |mode|
       if mode=='bin'
         $cmdlnoptions[:tx]= mode;        
@@ -84,10 +114,10 @@ def ParseOptions()
       end
     }
     
-    opts.on("-l", "--load-source <disk|file>","\n\tMandatory argument. Set from where the packets will be loaded."\
-            " 'disk' to load packets from .yml files under #{File.dirname(__FILE__)}/packets/load/ directory. "\
-            " 'file' to load files from CCSDS_203.0-B-2.rb file."\
-            " if you don't specify the option, 'disk' will be used.")\
+    opts.on("-l", "--load-source 'disk|file'","\n\tMandatory argument. Set from where the packets will be loaded."\
+            " \n\t'disk' to load packets from .yml files under #{File.dirname(__FILE__)}/packets/load/ directory. "\
+            " \t'file' to load files from CCSDS_203.0-B-2.rb file."\
+            " \n\tif you don't specify the option, 'disk' will be used.\n")\
     { |source|
       if source=='disk'
         $cmdlnoptions[:loadsource]= source;        
@@ -96,7 +126,7 @@ def ParseOptions()
       end
     }
     
-    opts.on("-h", "--help", "Prints this help") {
+    opts.on("-h", "--help", "\n\tPrint this help") {
            puts opts
            exit(0);
     }
@@ -135,6 +165,27 @@ def ParseOptions()
   else
     $cmdlnoptions[:tx]="bin";
     printf("-- USING DEFAULT: Transmit in binary format\n");
+  end
+  
+  if $cmdlnoptions.has_key?(:m)
+    printf("--Telecommand acceptance server will listen on port #{$cmdlnoptions[:m]}\n");
+  else
+    $cmdlnoptions[:m]=nil;
+    printf("-- USING DEFAULT: No Telecommand server will be fired up\n");
+  end
+  
+  if $cmdlnoptions.has_key?(:n)
+    printf("--Telemetry emitting server will listen on port #{$cmdlnoptions[:n]}\n");
+  else
+    $cmdlnoptions[:n]=nil;
+    printf("-- USING DEFAULT: No Telemetry server will be fired up\n");
+  end
+  
+  if $cmdlnoptions.has_key?(:f)
+    printf("--Telecommand transmission interval is: #{$cmdlnoptions[:f]} seconds\n");
+  else
+    $cmdlnoptions[:f]=1;
+    printf("-- USING DEFAULT: Telecommand transmission interval is: #{$cmdlnoptions[:f]} second\n");
   end
     
   end

@@ -38,15 +38,50 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #---------------------------------------------------------------------------
+require 'thread'
+require 'serialport'
+#require 'rubyserial'
 
 require_relative 'opts'
 #include Curses
 require_relative 'craft'
+require_relative 'CCSDSTCTMServer'
+require_relative 'testCCSDSClient'
+require_relative 'HelpThreads'
+
+$mutex_obj = Mutex.new();
+#$serial_line_queue = Queue.new();
+#$server_queue = Queue.new();
+
+#handles TC from client,--> to server,--> to serial
+$server_to_serial_q = Queue.new();
+
+#hadles TM from serial,--> to server,--> to client
+$serial_to_server_q = Queue.new();
+
+#handles yamled responses to client
+$server_to_client_q = Queue.new();
+
+$serial_pq ;
+$server_obj ;
+$test_client ;
 
 ParseOptions();
 
 ClaimSerialPort( $cmdlnoptions[:serialport]);
 
+l_t = return_serial_listen_thread(nil);
+#lt.run();
+slc_t = return_slice_thread();
+#st.run();
+#ccsds_t = return_ccsds_server_thread();
+
+server_t = CCSDSTCTMServer.new( "localhost");
+
+
+#$test_client = CCSDSClient.new( TCPSocket.open( "localhost", 2000 ) );
+
+#sleep(0.1);
 printf("\n---Loaded #{$pckCount} packets---\n");
 PrintBasicMenu();
 
@@ -54,3 +89,7 @@ while inp = gets
   ParseMainInput(inp);
 end
 
+
+server_t.l_t.join();
+server_t.slc_t.join();
+#server_t.join();

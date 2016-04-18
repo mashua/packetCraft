@@ -40,7 +40,7 @@ has:
       defval: 1
     - name: Ack
       reprsize: 4
-      defval: 1
+      defval: 3
     - name: Service Type
       reprsize: 8
       defval: 8
@@ -56,11 +56,11 @@ has:
   - name: ApplicationData
     reprsize: 40
     defval:
-    - 1
-    - 0
-    - 0
-    - 0
-    - 9
+    - 19
+    - 19
+    - 19
+    - 19
+    - 19
   - name: Spare
     reprsize: 0
     defval: 0

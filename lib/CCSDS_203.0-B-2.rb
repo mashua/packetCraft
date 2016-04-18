@@ -72,6 +72,211 @@ SRVC_STYPE_SZ = 8;
 SRC_ID_SZ = 8
 SPARE_SZ  = 0
 
+def give_empty_tc_tm_yaml()
+  
+  tc_tm = {'name' => 'Response',
+#                  'reprsize' => 65542, #page: 44, max packet octets
+                  'has' => [ {  'name'  => 'PacketHeader',
+#                                'reprsize'  => 48,
+                                'has'   =>[ { 'name' => 'PacketID',
+#                                              'reprsize' => 16,
+                                              'has'  => [ { 'name' => 'VersionNumber',
+                                                            'reprsize' => 3,
+                                                            'defval' => 0
+                                                          },
+                                                          { 'name' => 'Type',
+                                                            'reprsize' => 1,
+                                                            'defval' => 1
+                                                          },
+                                                          { 'name' => 'DataFieldHeaderFlag',
+                                                            'reprsize' => 1,
+                                                            'defval' => 1
+                                                          },
+                                                          { 'name' => 'ApplicationProcessID',
+                                                            'reprsize' => 11,
+                                                            'defval' => 1
+                                                          }
+                                                        ]
+                                            },
+                                            { 'name'  => 'PacketSequenceControl',
+#                                              'reprsize'  => 16,
+                                              'has' => [ {  'name' => 'SequenceFlags',
+                                                            'reprsize' => 2,
+                                                            'defval' => 3 #stand-alone packet
+                                                          },
+                                                          { 'name' => 'SequenceCount',
+                                                            'reprsize' => 14,
+                                                            'defval' => 185 #packet sequence number
+                                                          }                                                
+                                                       ]
+                                            },
+                                            { 'name'  => 'PacketLength', #packet length in octet value (defval) is: 
+                                                                         #      (packetdatafieldheader ((32bits)+
+                                                                         #      PacketErrorCtrl (16bits)+
+                                                                         #      Application Data (n bits)-8) / 8
+                                              'reprsize'  => 16,
+                                              'defval' => 66             # this value will be calculated dynamicaly at-runtime.
+                                                                         # just put a value here, but zero.
+                                            }
+                                          ]
+                              }, 
+                              { 'name'  => 'PacketDataField',
+#                                'reprsize'  => 33,
+                                'has'   =>[ { 'name' => 'DataFieldHeader',
+#                                              'reprsize' => 24+SRC_ID_SZ+SPARE_SZ,
+                                              'has'  => [ { 'name' => 'CCSDSSecondaryHeaderFlag',
+                                                            'reprsize' => 1,
+                                                            'defval' => 0 #non-CCSDS secondary header
+                                                          },
+                                                          { 'name' => 'TC Packet PUS Version Number',
+                                                            'reprsize' => 3,
+                                                            'defval' => 1
+                                                          },
+                                                          { 'name' => 'Ack',
+                                                            'reprsize' => 4,
+                                                            'defval' => 0 #see note on page: 45
+                                                          },
+                                                          { 'name' => 'Service Type', #which service this telecommand is related
+                                                            'reprsize' => 8,
+                                                            'defval' => 17
+                                                          },
+                                                          { 'name' => 'Service Subtype',
+                                                            'reprsize' => 8,
+                                                            'defval' => 1
+                                                          },
+                                                          { 'name' => 'SourceID',
+                                                            'reprsize' => SRC_ID_SZ,
+                                                            'defval' => 6
+                                                          },
+                                                          { 'name' => 'Spare',
+                                                            'reprsize' => SPARE_SZ,
+                                                            'defval' => 0
+                                                          }
+                                                         ]
+                                            },
+                                            { 'name' => 'ApplicationData',
+                                              'reprsize' => 2, # if you enter binary values at the 'defval' field in the form of 0b001110101..., 
+                                                                # then you must declare their multitude on the 'reprsize' field.
+                                                                # if you enter an array of values, then just don't put zero, if you leave it
+                                                                # zero, the field will be ignored and you'll end up with no payload on the message. 
+#                                              'defval' => 50999
+#                                              'defval' => 0b0000000100000000000000000000000000001000    #enter the packet payload here (binary or decimal values, for the moment)
+                                              'defval' => []
+                                            },
+                                            { 'name' => 'Spare', #used for padding, see page: 45
+                                              'reprsize' => 0,
+                                              'defval' => PCKT_SPR_SZ
+                                            },
+                                            { 'name' => 'PacketErrorControl', 
+                                              'reprsize' => PCKT_PERCTL_SZ, #16 bits for packet error control.
+                                              'defval' => 5                 #this field will be calculated on packet load-time 
+                                            }                               #as of an XOR operation, used as CRC(8) for the messages.
+                                          ]
+                              }
+                            ]};
+  return tc_tm;
+end
+
+$tc_to_have = {'name' => 'Response',
+#                  'reprsize' => 65542, #page: 44, max packet octets
+                  'has' => [ {  'name'  => 'PacketHeader',
+#                                'reprsize'  => 48,
+                                'has'   =>[ { 'name' => 'PacketID',
+#                                              'reprsize' => 16,
+                                              'has'  => [ { 'name' => 'VersionNumber',
+                                                            'reprsize' => 3,
+                                                            'defval' => 0
+                                                          },
+                                                          { 'name' => 'Type',
+                                                            'reprsize' => 1,
+                                                            'defval' => 1
+                                                          },
+                                                          { 'name' => 'DataFieldHeaderFlag',
+                                                            'reprsize' => 1,
+                                                            'defval' => 1
+                                                          },
+                                                          { 'name' => 'ApplicationProcessID',
+                                                            'reprsize' => 11,
+                                                            'defval' => 1
+                                                          }
+                                                        ]
+                                            },
+                                            { 'name'  => 'PacketSequenceControl',
+#                                              'reprsize'  => 16,
+                                              'has' => [ {  'name' => 'SequenceFlags',
+                                                            'reprsize' => 2,
+                                                            'defval' => 3 #stand-alone packet
+                                                          },
+                                                          { 'name' => 'SequenceCount',
+                                                            'reprsize' => 14,
+                                                            'defval' => 185 #packet sequence number
+                                                          }                                                
+                                                       ]
+                                            },
+                                            { 'name'  => 'PacketLength', #packet length in octet value (defval) is: 
+                                                                         #      (packetdatafieldheader ((32bits)+
+                                                                         #      PacketErrorCtrl (16bits)+
+                                                                         #      Application Data (n bits)-8) / 8
+                                              'reprsize'  => 16,
+                                              'defval' => 66             # this value will be calculated dynamicaly at-runtime.
+                                                                         # just put a value here, but zero.
+                                            }
+                                          ]
+                              }, 
+                              { 'name'  => 'PacketDataField',
+#                                'reprsize'  => 33,
+                                'has'   =>[ { 'name' => 'DataFieldHeader',
+#                                              'reprsize' => 24+SRC_ID_SZ+SPARE_SZ,
+                                              'has'  => [ { 'name' => 'CCSDSSecondaryHeaderFlag',
+                                                            'reprsize' => 1,
+                                                            'defval' => 0 #non-CCSDS secondary header
+                                                          },
+                                                          { 'name' => 'TC Packet PUS Version Number',
+                                                            'reprsize' => 3,
+                                                            'defval' => 1
+                                                          },
+                                                          { 'name' => 'Ack',
+                                                            'reprsize' => 4,
+                                                            'defval' => 0 #see note on page: 45
+                                                          },
+                                                          { 'name' => 'Service Type', #which service this telecommand is related
+                                                            'reprsize' => 8,
+                                                            'defval' => 17
+                                                          },
+                                                          { 'name' => 'Service Subtype',
+                                                            'reprsize' => 8,
+                                                            'defval' => 1
+                                                          },
+                                                          { 'name' => 'SourceID',
+                                                            'reprsize' => SRC_ID_SZ,
+                                                            'defval' => 6
+                                                          },
+                                                          { 'name' => 'Spare',
+                                                            'reprsize' => SPARE_SZ,
+                                                            'defval' => 0
+                                                          }
+                                                         ]
+                                            },
+                                            { 'name' => 'ApplicationData',
+                                              'reprsize' => 2, # if you enter binary values at the 'defval' field in the form of 0b001110101..., 
+                                                                # then you must declare their multitude on the 'reprsize' field.
+                                                                # if you enter an array of values, then just don't put zero, if you leave it
+                                                                # zero, the field will be ignored and you'll end up with no payload on the message. 
+#                                              'defval' => 50999
+#                                              'defval' => 0b0000000100000000000000000000000000001000    #enter the packet payload here (binary or decimal values, for the moment)
+                                              'defval' => []
+                                            },
+                                            { 'name' => 'Spare', #used for padding, see page: 45
+                                              'reprsize' => 0,
+                                              'defval' => PCKT_SPR_SZ
+                                            },
+                                            { 'name' => 'PacketErrorControl', 
+                                              'reprsize' => PCKT_PERCTL_SZ, #16 bits for packet error control.
+                                              'defval' => 5                 #this field will be calculated on packet load-time 
+                                            }                               #as of an XOR operation, used as CRC(8) for the messages.
+                                          ]
+                              }
+                            ]};
 
 #Telecommand packet structure in Array of Hashes
 $telecmdpackets = [{'name' => 'TestServicePacket',

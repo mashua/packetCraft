@@ -54,7 +54,7 @@ def ClaimSerialPort( serialline )
   rescue
     $serialPort= nil;
     print("\nWARNING! Serial port (or at least something emulating it) is not availiable on this system,"\
-          "continuing without serial transmition/reception support.\n");
+          "continuing without serial transmission/reception support.\n");
   end
 end
 

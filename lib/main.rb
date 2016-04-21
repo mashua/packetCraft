@@ -46,7 +46,7 @@ require_relative 'opts'
 #include Curses
 require_relative 'craft'
 require_relative 'CCSDSTCTMServer'
-require_relative 'testCCSDSClient'
+#require_relative 'testCCSDSClient'
 require_relative 'HelpThreads'
 
 $mutex_obj = Mutex.new();
@@ -88,7 +88,6 @@ PrintBasicMenu();
 while inp = gets
   ParseMainInput(inp);
 end
-
 
 server_t.l_t.join();
 server_t.slc_t.join();

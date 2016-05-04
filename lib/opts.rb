@@ -82,8 +82,30 @@ def ParseOptions()
      end
     }
     
+    opts.on("-u", "--udp-tx-addr 'ipv4 address'","\n\tOptional argument."\
+            " The ipv4 address where the packets will be sent (UDP).
+              (This address must be within the local network subnet where packetCraft is running, because
+              UDP packets are not routable.\n")\
+    { |u|
+      if u != nil
+        $cmdlnoptions[:u]= u; 
+      else
+        $cmdlnoptions[:u]= nil;
+     end
+    }
+    
+    opts.on("-i", "--udp-tx-port 'port'","\n\tOptional argument."\
+            " The port number where the packets will be sent (UDP).\n")\
+    { |i|
+      if i != nil
+        $cmdlnoptions[:i]= i; 
+      else
+        $cmdlnoptions[:i]= nil;
+     end
+    }
+    
     opts.on("-f","--transmit-interval 'SECONDS'","\n\tMandatory argument."\
-            " The interval between packet transmission on the serial line.\n")\
+            " The interval between packet transmission on the serial / UDP port.\n")\
     { |f|
       if f != nil
         $cmdlnoptions[:f]= f.to_f; #TODO add exception handler for non-numbers.
@@ -179,6 +201,21 @@ def ParseOptions()
   else
     $cmdlnoptions[:n]=nil;
     printf("-- USING DEFAULT: No Telemetry server will be fired up\n");
+  end
+  
+  if $cmdlnoptions.has_key?(:u) && $cmdlnoptions.has_key?(:i)
+    $cmdlnoptions[:udp] = true;
+    printf("--Packets will be transmitted with UDP also, to address #{$cmdlnoptions[:u]} and port #{$cmdlnoptions[:i]}\n");
+  else
+    if $cmdlnoptions.has_key?(:u) && !$cmdlnoptions.has_key?(:i)
+      printf("--You asked for UDP transmission, but forgot to specify a port, please use '-u', or '--udp-tx' with '-i' or '--udp-tx-port' option.\n");
+    end
+    if $cmdlnoptions.has_key?(:i) && !$cmdlnoptions.has_key?(:u)
+      printf("--You specified a UDP port, but forgot to specify an address, please use '-i', or '--udp-tx-port' with '-u' or '--udp-tx' option.\n");
+    end
+    if !$cmdlnoptions.has_key?(:u) && !$cmdlnoptions.has_key?(:i) 
+      printf("-- USING DEFAULT: No UDP transmission will be done\n");
+    end
   end
   
   if $cmdlnoptions.has_key?(:f)

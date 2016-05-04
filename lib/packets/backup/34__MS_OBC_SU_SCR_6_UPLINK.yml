@@ -1,0 +1,176 @@
+---
+name: LD_UPLINK_SU_SCR_6_OBC
+has:
+- name: PacketHeader
+  has:
+  - name: PacketID
+    has:
+    - name: VersionNumber
+      reprsize: 3
+      defval: 0
+    - name: Type
+      reprsize: 1
+      defval: 1
+    - name: DataFieldHeaderFlag
+      reprsize: 1
+      defval: 1
+    - name: ApplicationProcessID
+      reprsize: 11
+      defval: 1
+  - name: PacketSequenceControl
+    has:
+    - name: SequenceFlags
+      reprsize: 2
+      defval: 3
+    - name: SequenceCount
+      reprsize: 14
+      defval: 59
+  - name: PacketLength
+    reprsize: 16
+    defval: 66
+- name: PacketDataField
+  has:
+  - name: DataFieldHeader
+    has:
+    - name: CCSDSSecondaryHeaderFlag
+      reprsize: 1
+      defval: 0
+    - name: TC Packet PUS Version Number
+      reprsize: 3
+      defval: 1
+    - name: Ack
+      reprsize: 4
+      defval: 0
+    - name: Service Type
+      reprsize: 8
+      defval: 13
+    - name: Service Subtype
+      reprsize: 8
+      defval: 18
+    - name: SourceID
+      reprsize: 8
+      defval: 6
+    - name: Spare
+      reprsize: 0
+      defval: 0
+  - name: ApplicationData
+    reprsize: 888
+    defval:
+    - 0
+    - 0
+    - 6
+    - 0x6d 
+    - 0 
+    - 0xc0 
+    - 05 
+    - 0xff 
+    - 0x1c 
+    - 1 
+    - 0 
+    - 0 
+    - 0 
+    - 0x41 
+    - 0x44 
+    - 0 
+    - 0x24 
+    - 0x0c 
+    - 0x41
+    - 0 
+    - 0x26 
+    - 0x0c 
+    - 0x42 
+    - 0 
+    - 0x28 
+    - 0x0c 
+    - 0x43 
+    - 0 
+    - 0x2a 
+    - 0x0c 
+    - 0x42 
+    - 0x00 
+    - 0x2b 
+    - 0x0c 
+    - 0x55
+    - 0x0a 
+    - 0x00 
+    - 0xf1 
+    - 0x01 
+    - 0x01 
+    - 0x0a 
+    - 0x00 
+    - 0x06 
+    - 0x01 
+    - 0x02 
+    - 0x0a 
+    - 0x00 
+    - 0x06 
+    - 0x01 
+    - 0x03 
+    - 0x0a
+    - 0x00 
+    - 0xf2 
+    - 0x01 
+    - 0x04 
+    - 0x0a 
+    - 0x00 
+    - 0xfe 
+    - 0x01 
+    - 0x05 
+    - 0x0a 
+    - 0x00 
+    - 0xf1 
+    - 0x01 
+    - 0x01 
+    - 0x0a 
+    - 0x00
+    - 0x06 
+    - 0x01 
+    - 0x02 
+    - 0x0a 
+    - 0x00 
+    - 0x06 
+    - 0x01 
+    - 0x03 
+    - 0x0a 
+    - 0x00 
+    - 0xf2 
+    - 0x01 
+    - 0x04 
+    - 0x0a 
+    - 0x00 
+    - 0xfe
+    - 0x01 
+    - 0x05 
+    - 0x0a 
+    - 0x00 
+    - 0xf1 
+    - 0x01 
+    - 0x01 
+    - 0x0a 
+    - 0x00 
+    - 0x06 
+    - 0x01 
+    - 0x02 
+    - 0x0a 
+    - 0x00 
+    - 0x06 
+    - 0x01
+    - 0x03 
+    - 0x0a 
+    - 0x00 
+    - 0xf2 
+    - 0x01 
+    - 0x04 
+    - 0x0a 
+    - 0x00 
+    - 0xfe 
+    - 0x01 
+    - 0x05 
+    - 0x50 
+    - 0xd4 
+  - name: Spare
+    reprsize: 0
+    defval: 0
+  - name: PacketErrorControl
+    reprsize: 16
+    defval: 5

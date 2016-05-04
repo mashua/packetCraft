@@ -1,6 +1,9 @@
 require "socket"
 
 class CCSDSTCTMServer
+  
+  attr_reader :udp_socket;
+  
   #tc_port accepts TCs
   #tm_port serves TMs
   def initialize( ip )
@@ -13,6 +16,9 @@ class CCSDSTCTMServer
       @tm_server_p = $cmdlnoptions[:n]
       @tm_server = TCPServer.open( @tm_server_p );
       @slc_t = fire_tm_server();
+    end
+    if $cmdlnoptions[:u] != nil && $cmdlnoptions[:i] != nil 
+      @udp_socket = UDPSocket.new();
     end
   end
   

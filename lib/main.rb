@@ -76,8 +76,7 @@ slc_t = return_slice_thread();
 #st.run();
 #ccsds_t = return_ccsds_server_thread();
 
-server_t = CCSDSTCTMServer.new( "localhost");
-
+$server_t = CCSDSTCTMServer.new( "localhost");
 
 #$test_client = CCSDSClient.new( TCPSocket.open( "localhost", 2000 ) );
 

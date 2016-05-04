@@ -279,23 +279,27 @@ def SerialTxRawBin( sleep_t, input, array, line, bytestuff )
 #$mutex_obj.lock();
         if sleep_t == 0
           $serialPort.write( stuffed_array.pack("C*") );
+          printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed\n\n");
         else
           $serialPort.write( stuffed_array.pack("C*") );
+          printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed\n\n");
           sleep(sleep_t);
         end
 #$mutex_obj.unlock();
 #        sleep(0.1);
       }
 #      printf("\nTransmission of #{i} bits, (#{i/8} bytes) completed\n");
-      printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed\n");
+#      printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed\n");
     elsif    #tx all packets, bytestuff off
       array.each{ |elem|
         i+=elem.length;
 #$mutex_obj.lock();if sleep_t == 0
         if sleep_t == 0
           $serialPort.write( stuffed_array.pack("C*") );
+          printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed\n\n");
         else
           $serialPort.write( stuffed_array.pack("C*") );
+          printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed\n\n");
           sleep(sleep_t);
         end
 #        $serialPort.write( bitsToBytes(elem).pack("C*") );
@@ -303,7 +307,7 @@ def SerialTxRawBin( sleep_t, input, array, line, bytestuff )
 #        sleep(1.5);
       }
 #      printf("\nTransmission of #{i} bits, (#{i/8} bytes) completed\n");
-      printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed\n");
+#      printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed\n");
     end
   else 
     begin  
@@ -318,28 +322,138 @@ def SerialTxRawBin( sleep_t, input, array, line, bytestuff )
 #$mutex_obj.lock();
         if sleep_t == 0
           $serialPort.write( stuffed_array.pack("C*") );
+          printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed\n\n");
         else
           $serialPort.write( stuffed_array.pack("C*") );
+          printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed\n\n");
           sleep(sleep_t);
         end
 #        $serialPort.write( stuffed_array.pack("C*"));
 #$mutex_obj.unlock();
 #        printf("\nTransmission of #{i} bits, (#{i/8} bytes) completed\n");
-        printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed\n");
+#        printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed\n");
       else #tx a specific packet, bytestuff off
         txarray = array[(input.to_i)-1];
         i+=txarray.length;
 #$mutex_obj.lock();
         if sleep_t == 0
           $serialPort.write( stuffed_array.pack("C*") );
+          printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed\n\n");
         else
           $serialPort.write( stuffed_array.pack("C*") );
+          printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed\n\n");
           sleep(sleep_t);
         end
 #        $serialPort.write( bitsToBytes(txarray).pack("C*"));
 #$mutex_obj.unlock();
 #        printf("\nTransmission of #{i} bits, (#{i/8} bytes}) completed\n");
-        printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed\n");
+#        printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed\n");
+      end
+    rescue => exception
+      printf("\nnon-existant packet selected\n");
+#      puts exception.backtrace
+#        raise
+    end
+  end
+end
+
+#input, holds the number of packet to tx.
+#array, holds the array of packet messages.
+#line, holds the Serial line to use for tx-ition
+#bytestuff, true for byte stuffing before tx-ition, false else.
+def UDPTxRawBin( sleep_t, input, array, udp_socket, bytestuff )
+  stuffed_array = Array.new();
+  i=0;
+  if udp_socket == nil
+    printf("\nNo udp port set up, cannot transmit data.\n");
+    return;
+  end
+  if input == "\n"
+    if bytestuff==TRUE #tx all packets, bytestuff on
+      array.each{ |elem|
+        stuffed_array = byteStuff( bitsToBytes( Array.new(elem)));
+        i+=stuffed_array.length;
+#        $serialPort.write( bitsToBytes( stuffed_array).pack("C*") );
+#$mutex_obj.lock();
+        if sleep_t == 0
+#          $serialPort.write( stuffed_array.pack("C*") );
+          udp_socket.send( stuffed_array.pack("C*"), 0, $cmdlnoptions[:u] , $cmdlnoptions[:i]);
+          printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed\n\n");
+        else
+#          $serialPort.write( stuffed_array.pack("C*") );
+          udp_socket.send( stuffed_array.pack("C*"), 0, $cmdlnoptions[:u] , $cmdlnoptions[:i]);
+          printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed\n\n");
+          sleep(sleep_t);
+        end
+#$mutex_obj.unlock();
+#        sleep(0.1);
+      }
+#      printf("\nTransmission of #{i} bits, (#{i/8} bytes) completed\n");
+#      printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed\n");
+    elsif    #tx all packets, bytestuff off
+      array.each{ |elem|
+        i+=elem.length;
+#$mutex_obj.lock();if sleep_t == 0
+        if sleep_t == 0
+#          $serialPort.write( stuffed_array.pack("C*") );
+          udp_socket.send( stuffed_array.pack("C*"), 0, $cmdlnoptions[:u] , $cmdlnoptions[:i]);
+          printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed\n\n");
+        else
+#          $serialPort.write( stuffed_array.pack("C*") );
+          udp_socket.send( stuffed_array.pack("C*"), 0, $cmdlnoptions[:u] , $cmdlnoptions[:i]);
+          printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed\n\n");
+          sleep(sleep_t);
+        end
+#        $serialPort.write( bitsToBytes(elem).pack("C*") );
+#$mutex_obj.unlock();
+#        sleep(1.5);
+      }
+#      printf("\nTransmission of #{i} bits, (#{i/8} bytes) completed\n");
+#      printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed\n");
+    end
+  else 
+    begin  
+      if bytestuff==TRUE #tx a specific packet, bytestuff on
+        stuffed_array = byteStuff( bitsToBytes( Array.new(array[(input.to_i)-1])));
+#        print("\n\n#{Array.new(array[(input.to_i)-1])}")
+#        stuffed_array = byteStuff(Array.new(array[(input.to_i)-1]));
+        i+=stuffed_array.length;
+#          printArrayBitsOnBytesSeg( stuffed_array);
+#        $serialPort.write( bitsToBytes( stuffed_array).pack("C*")); 
+         print("Tx: #{stuffed_array}\n")
+#$mutex_obj.lock();
+        if sleep_t == 0
+#          $serialPort.write( stuffed_array.pack("C*") );
+          udp_socket.send( stuffed_array.pack("C*"), 0, $cmdlnoptions[:u] , $cmdlnoptions[:i]);
+          printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed\n\n");
+        else
+#          $serialPort.write( stuffed_array.pack("C*") );
+          udp_socket.send( stuffed_array.pack("C*"), 0, $cmdlnoptions[:u] , $cmdlnoptions[:i]);
+          printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed\n\n");
+          sleep(sleep_t);
+        end
+#        $serialPort.write( stuffed_array.pack("C*"));
+#$mutex_obj.unlock();
+#        printf("\nTransmission of #{i} bits, (#{i/8} bytes) completed\n");
+#        printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed\n");
+      else #tx a specific packet, bytestuff off
+        txarray = array[(input.to_i)-1];
+        i+=txarray.length;
+#$mutex_obj.lock();
+        if sleep_t == 0
+#          $serialPort.write( stuffed_array.pack("C*") );
+          udp_socket.send( stuffed_array.pack("C*"), 0, $cmdlnoptions[:u] , $cmdlnoptions[:i]);
+          printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed\n\n");
+        else
+#          $serialPort.write( stuffed_array.pack("C*") );
+          udp_socket.send( stuffed_array.pack("C*"), 0, $cmdlnoptions[:u] , $cmdlnoptions[:i]);
+          printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed\n\n");
+          sleep(sleep_t);
+        end
+#        $serialPort.write( bitsToBytes(txarray).pack("C*"));
+#$mutex_obj.unlock();
+#        printf("\nTransmission of #{i} bits, (#{i/8} bytes}) completed\n");
+#        printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed\n");
       end
     rescue => exception
       printf("\nnon-existant packet selected\n");
@@ -493,8 +607,8 @@ def PrintBasicMenu()
   printf("--3.  See the contents of the messages in Hash data structure format (not very usefull)\n");
   printf("--4.  See the contents of the messages in raw binary format\n");
   printf("--5.  Display packet titles\n");
-  printf("--6.  Transmit the contents of the messages in Serial Line\n");
-  printf("--7.  Transmit the contents of the messages in Serial Line in a Loop\n");
+  printf("--6.  Transmit the contents of the messages on #{$cmdlnoptions[:udp]?"Serial and UDP":"Serial"} Port\n");
+  printf("--7.  Transmit the contents of the messages on #{$cmdlnoptions[:udp]?"Serial and UDP":"Serial"} Port in a Loop\n");
   printf("Q|q.  To exit program\n");
   printf("type your command input...\n");
 end
@@ -565,6 +679,7 @@ def _implCommand6()
   inp=gets;
   sleep_t = $cmdlnoptions[:f].to_f;
   SerialTxRawBin( sleep_t, inp, $indPacketsBinArray, $cmdlnoptions[:serialport], $cmdlnoptions[:bytestuff] );
+  UDPTxRawBin( sleep_t, inp, $indPacketsBinArray, $server_t.udp_socket, $cmdlnoptions[:bytestuff] );
   print("\n");
   
 end
@@ -580,7 +695,8 @@ def _implCommand7()
   $indPacketsBinArray.each{
     loop do
       SerialTxRawBin( sleep_t, inp, $indPacketsBinArray, $cmdlnoptions[:serialport], $cmdlnoptions[:bytestuff] );
-      sleep(sleep_t);
+      UDPTxRawBin( sleep_t, inp, $indPacketsBinArray, $server_t.udp_socket, $cmdlnoptions[:bytestuff] );
+      sleep(sleep_t); #maybe to be removed...or call the upper calls with sleep_t = 0
     end
   }
   

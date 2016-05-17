@@ -49,7 +49,7 @@ require_relative 'utils'
 require_relative 'CCSDS_203.0-B-2'
 
 $telecmdpackets = Array.new();
-
+$folders = Array.new();
 #holds a reference to an array who contains the individual
 #packets string representation, like: parsed yaml
 $indPacketsStrArray = Array.new();
@@ -86,13 +86,27 @@ $crosspacketBlock = Proc.new{ |theHash, level|
         #don't add anything
       else
           if theHash['defval'].class == Array
-            temp_ar = decByteArraytoBits(theHash['defval']);
+            temp_ar = Array.new();
+            if theHash['defval'][0].to_s.include?("/") and theHash['defval'][0].to_s.length > 1
+              #we point a file as TC application data.
+              File.open( theHash['defval'][0].to_s, "rb") { |io_obj|
+                io_obj.each_byte { |a_byte|  
+                  temp_ar << a_byte;
+                }
+              }
+            else
+              theHash['defval'].each { |tempelem|  
+                temp_ar<<tempelem;
+              }
+            end
+            temp_ar = decByteArraytoBits( temp_ar);
             temp_ar.each{ |elem|
               $totalPacketsBinStrArray[$pos] =  elem;
               $indPacketsBinStrArray[level][$pos] = elem;
               $pos+=1;
             }
             break; #don't ask why, just break.
+#            end
           else
             $totalPacketsBinStrArray[$pos] = sprintf("%0#{theHash['reprsize']}b", theHash['defval']);
             $indPacketsBinStrArray[level][$pos]=sprintf("%0#{theHash['reprsize']}b", theHash['defval']);
@@ -103,14 +117,23 @@ $crosspacketBlock = Proc.new{ |theHash, level|
     end
   }
 };
+entries = Array.new();
+Dir.chdir( File.dirname(__FILE__).concat("/packets/load/")) { |newDir|  
+  entries = Dir.glob("**/*.yml")#.reject { |local_file| File.directory?(local_file) }
+}#go back to old dir
 
-entries = Dir.entries( File.dirname(__FILE__).concat("/packets/load/"));
-entries.delete('.');
-entries.delete('..');
+#entries = Dir.entries( File.dirname(__FILE__).concat("/packets/load/"));
+#entries.delete('.');
+#entries.delete('..');
 entries.sort_by! { |a| a[0] }
-
 entries.each_with_index { |item,index|
-    $telecmdpackets << YLoadTelecmdPacketFFile( File.dirname(__FILE__).concat("/packets/load/") , item);
+  
+  tempAr = Array.new(2);
+  tempAr[0] = index #$telecmdpackets index
+  tempAr[1] = item.split("/"); 
+  $folders << tempAr;
+  $telecmdpackets << YLoadTelecmdPacketFFile( File.dirname(__FILE__).concat("/packets/load/") , item);
+    
 }
 
 $telecmdpackets.each { |innerHash|

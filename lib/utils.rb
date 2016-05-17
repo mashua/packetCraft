@@ -182,14 +182,7 @@ def breakECSStoYAML( theArray)
 #  $mutex_obj.unlock();
 end
 
-#Returns a two-dimensional array
-def CreatePacketSegment( width, height )
-  theArray = Array.new( width );
-  theArray.map! { Array.new(height)  }
-  #return theArray;
-end
-
-#Returns the file a String
+#Returns the file as a String
 def SLoadTelecmdPacketFFile(dir="./packets/packet.yml")
   File.read(dir);
 end
@@ -292,13 +285,14 @@ def SerialTxRawBin( sleep_t, input, array, line, bytestuff )
 #      printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed\n");
     elsif    #tx all packets, bytestuff off
       array.each{ |elem|
+        txarray = bitsToBytes( Array.new(elem));
         i+=elem.length;
 #$mutex_obj.lock();if sleep_t == 0
         if sleep_t == 0
-          $serialPort.write( stuffed_array.pack("C*") );
+          $serialPort.write( txarray.pack("C*") );
           printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed (on serial port)\n\n");
         else
-          $serialPort.write( stuffed_array.pack("C*") );
+          $serialPort.write( txarray.pack("C*") );
           printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed (on serial port)\n\n");
           sleep(sleep_t);
         end
@@ -333,14 +327,14 @@ def SerialTxRawBin( sleep_t, input, array, line, bytestuff )
 #        printf("\nTransmission of #{i} bits, (#{i/8} bytes) completed\n");
 #        printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed\n");
       else #tx a specific packet, bytestuff off
-        txarray = array[(input.to_i)-1];
+        txarray = bitsToBytes( array[(input.to_i)-1]);
         i+=txarray.length;
 #$mutex_obj.lock();
         if sleep_t == 0
-          $serialPort.write( stuffed_array.pack("C*") );
+          $serialPort.write( txarray.pack("C*") );
           printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed (on serial port)\n\n");
         else
-          $serialPort.write( stuffed_array.pack("C*") );
+          $serialPort.write( txarray.pack("C*") );
           printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed (on serial port)\n\n");
           sleep(sleep_t);
         end
@@ -667,6 +661,17 @@ end
 def _implCommand5()
   
   printf("\n");
+  
+#  $folders.each_with_index { |fl,index|
+#  
+#    subfolder=""
+#    fl[1].each { |elem| 
+#      subfolder = "/packets/load/".concat(elem) }
+#    print sprintf("--packet no: %1$02d is: %2$s ( subfolder: %3$s )\n", index+1, $telecmdpackets[fl[0]]['name'], subfolder );
+#    
+#    
+#  }
+#  
   printf("You have loaded #{$indPacketsBinArray.size} packets, their titles are:\n");
   $telecmdpackets.each_with_index { |tc, index|
     print sprintf("--packet no: %1$02d is: %2$s\n", index+1, tc['name']);

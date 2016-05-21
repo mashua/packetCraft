@@ -1,5 +1,5 @@
 ---
-name: MS_SU_LOG_REPORT_OBC
+name: LD_UPLINK_SU_SCR_6_OBC
 has:
 - name: PacketHeader
   has:
@@ -43,10 +43,10 @@ has:
       defval: 0
     - name: Service Type
       reprsize: 8
-      defval: 15
+      defval: 13
     - name: Service Subtype
       reprsize: 8
-      defval: 12
+      defval: 18
     - name: SourceID
       reprsize: 8
       defval: 6
@@ -54,9 +54,10 @@ has:
       reprsize: 0
       defval: 0
   - name: ApplicationData
-    reprsize: 8
-    defval:
-    - 8
+    reprsize: 888
+#    defval: [/a/full/file/path/here/and/remove/comment/mark/asmbl.pdf]
+#    defval: [/home/<user>/Desktop/testld.txt]
+    defval: []
   - name: Spare
     reprsize: 0
     defval: 0

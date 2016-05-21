@@ -1,5 +1,5 @@
 ---
-name: TestServicePacket_on_subdir_1
+name: LD_UPLINK_SU_SCR_6_OBC
 has:
 - name: PacketHeader
   has:
@@ -43,18 +43,20 @@ has:
       defval: 0
     - name: Service Type
       reprsize: 8
-      defval: 17
+      defval: 13
     - name: Service Subtype
       reprsize: 8
-      defval: 1
+      defval: 18
     - name: SourceID
       reprsize: 8
-      defval: 7
+      defval: 6
     - name: Spare
       reprsize: 0
       defval: 0
   - name: ApplicationData
-    reprsize: 2
+    reprsize: 888
+#    defval: [/a/full/file/path/here/and/remove/comment/mark/asmbl.pdf]
+#    defval: [/home/<user>/Desktop/testld.txt]
     defval: []
   - name: Spare
     reprsize: 0

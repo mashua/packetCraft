@@ -1,5 +1,5 @@
 ---
-name: TestServicePacketFile
+name: MS_SU_LOG_REPORT_OBC
 has:
 - name: PacketHeader
   has:
@@ -43,10 +43,10 @@ has:
       defval: 0
     - name: Service Type
       reprsize: 8
-      defval: 17
+      defval: 15
     - name: Service Subtype
       reprsize: 8
-      defval: 1
+      defval: 12
     - name: SourceID
       reprsize: 8
       defval: 7
@@ -54,10 +54,9 @@ has:
       reprsize: 0
       defval: 0
   - name: ApplicationData
-    reprsize: 2
-#    defval: [/a/full/file/path/here/and/remove/comment/mark/asmbl.pdf]
-#    defval: [/home/<user>/Desktop/testld.txt]
-    defval: []    
+    reprsize: 8
+    defval:
+    - 8
   - name: Spare
     reprsize: 0
     defval: 0

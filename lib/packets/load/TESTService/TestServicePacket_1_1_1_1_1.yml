@@ -1,5 +1,5 @@
 ---
-name: TestServicePacket_on_subdir_1
+name: TestServicePacket
 has:
 - name: PacketHeader
   has:
@@ -49,7 +49,7 @@ has:
       defval: 1
     - name: SourceID
       reprsize: 8
-      defval: 7
+      defval: 2
     - name: Spare
       reprsize: 0
       defval: 0

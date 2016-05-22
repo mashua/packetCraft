@@ -56,7 +56,7 @@ has:
   - name: ApplicationData
     reprsize: 2
     defval:
-    - 9
+    - 0x09
     - 1
     - 1
   - name: Spare

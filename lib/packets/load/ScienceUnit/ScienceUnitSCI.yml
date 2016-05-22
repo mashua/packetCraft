@@ -56,10 +56,11 @@ has:
   - name: ApplicationData
     reprsize: 2
     defval:
-    - 8
+    - 0x08
+    - 3
+    - 5
+    - 64
     - 1
-    - 1
-    - 2
   - name: Spare
     reprsize: 0
     defval: 0

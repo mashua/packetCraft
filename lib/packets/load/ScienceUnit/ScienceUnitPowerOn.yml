@@ -56,11 +56,8 @@ has:
   - name: ApplicationData
     reprsize: 2
     defval:
-    - 241
-    - 1
-    - 2
-    - 3
-    - 4
+    - 0xF1
+    - 1 #seq
   - name: Spare
     reprsize: 0
     defval: 0

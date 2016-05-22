@@ -56,9 +56,10 @@ has:
   - name: ApplicationData
     reprsize: 2
     defval:
-    - 7
-    - 1 
-    - 5
+    - 0x07
+    - 2 #seq_count
+    - 1 #channel
+    - 5 #t_del
   - name: Spare
     reprsize: 0
     defval: 0

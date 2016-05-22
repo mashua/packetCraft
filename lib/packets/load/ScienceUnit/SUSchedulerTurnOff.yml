@@ -46,7 +46,7 @@ has:
       defval: 18
     - name: Service Subtype
       reprsize: 8
-      defval: 18
+      defval: 25
     - name: SourceID
       reprsize: 8
       defval: 6
@@ -56,7 +56,7 @@ has:
   - name: ApplicationData
     reprsize: 2
     defval:
-    - 0
+    - 1
   - name: Spare
     reprsize: 0
     defval: 0

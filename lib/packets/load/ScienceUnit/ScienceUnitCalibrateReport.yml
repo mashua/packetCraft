@@ -46,7 +46,7 @@ has:
       defval: 18
     - name: Service Subtype
       reprsize: 8
-      defval: 9 #Calibrate report
+      defval: 9
     - name: SourceID
       reprsize: 8
       defval: 6
@@ -57,8 +57,8 @@ has:
     reprsize: 2
     defval:
     - 7
-    - 1 #channel to report on
-    - 2 #time between
+    - 1
+    - 2
   - name: Spare
     reprsize: 0
     defval: 0

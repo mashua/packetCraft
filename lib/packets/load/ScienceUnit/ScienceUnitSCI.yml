@@ -46,7 +46,7 @@ has:
       defval: 18
     - name: Service Subtype
       reprsize: 8
-      defval: 10 #SCI
+      defval: 10
     - name: SourceID
       reprsize: 8
       defval: 6
@@ -58,8 +58,8 @@ has:
     defval:
     - 8
     - 1
-    - 1 #fs in hz
-    - 2 #avg of raw data
+    - 1
+    - 2
   - name: Spare
     reprsize: 0
     defval: 0

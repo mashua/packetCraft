@@ -46,7 +46,7 @@ has:
       defval: 18
     - name: Service Subtype
       reprsize: 8
-      defval: 4 #load param tc
+      defval: 4
     - name: SourceID
       reprsize: 8
       defval: 6
@@ -59,7 +59,7 @@ has:
     - 5
     - 141
     - 3
-    - 0xFFFF
+    - 0
   - name: Spare
     reprsize: 0
     defval: 0

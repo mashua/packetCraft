@@ -46,7 +46,7 @@ has:
       defval: 18
     - name: Service Subtype
       reprsize: 8
-      defval: 5 #report parameters su
+      defval: 5
     - name: SourceID
       reprsize: 8
       defval: 6

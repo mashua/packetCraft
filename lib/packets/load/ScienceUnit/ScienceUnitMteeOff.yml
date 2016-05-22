@@ -46,7 +46,7 @@ has:
       defval: 18
     - name: Service Subtype
       reprsize: 8
-      defval: 21 #mtee off
+      defval: 21
     - name: SourceID
       reprsize: 8
       defval: 6

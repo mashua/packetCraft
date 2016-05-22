@@ -46,7 +46,7 @@ has:
       defval: 18
     - name: Service Subtype
       reprsize: 8
-      defval: 16 #DUMP
+      defval: 16
     - name: SourceID
       reprsize: 8
       defval: 6

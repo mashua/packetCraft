@@ -108,10 +108,16 @@ $crosspacketBlock = Proc.new{ |theHash, level|
             break; #don't ask why, just break.
 #            end
           else
-            $totalPacketsBinStrArray[$pos] = sprintf("%0#{theHash['reprsize']}b", theHash['defval']);
-            $indPacketsBinStrArray[level][$pos]=sprintf("%0#{theHash['reprsize']}b", theHash['defval']);
-            $pos+=1;
-            break; #don't ask why, just break.
+            begin
+              $totalPacketsBinStrArray[$pos] = sprintf("%0#{theHash['reprsize']}b", theHash['defval']);
+              $indPacketsBinStrArray[level][$pos]=sprintf("%0#{theHash['reprsize']}b", theHash['defval']);
+              $pos+=1;
+              break; #don't ask why, just break.
+            rescue
+              printf("\n\nError parsing the field named: #{theHash['name']}, in nest level: #{level}\n\n");
+              exit(1);
+            end
+            
           end
       end
     end

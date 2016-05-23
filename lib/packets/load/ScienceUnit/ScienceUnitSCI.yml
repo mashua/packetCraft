@@ -1,5 +1,5 @@
 ---
-name: ScienceUnitSCI
+name: ScienceUnitScienceData(SU_SCI)
 has:
 - name: PacketHeader
   has:
@@ -57,10 +57,10 @@ has:
     reprsize: 2
     defval:
     - 0x08
-    - 3
-    - 5
-    - 64
-    - 1
+    - 3 #len
+    - 5 #seq count
+    - 64 #fs
+    - 1 #avg
   - name: Spare
     reprsize: 0
     defval: 0

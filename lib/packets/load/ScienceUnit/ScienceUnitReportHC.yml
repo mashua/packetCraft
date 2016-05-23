@@ -1,5 +1,5 @@
 ---
-name: ScienceUnitReportHC
+name: ScienceUnitHealthCheck(SU_HC)
 has:
 - name: PacketHeader
   has:
@@ -56,7 +56,9 @@ has:
   - name: ApplicationData
     reprsize: 2
     defval:
-    - 5
+    - 0x6
+    - 1 #len
+    - 5 #seq count
   - name: Spare
     reprsize: 0
     defval: 0

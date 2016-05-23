@@ -1,5 +1,5 @@
 ---
-name: ScienceUnitBiasOff(SU_BIAS_OFF)
+name: ScienceUnitLoadParametersShort
 has:
 - name: PacketHeader
   has:
@@ -46,7 +46,7 @@ has:
       defval: 18
     - name: Service Subtype
       reprsize: 8
-      defval: 19
+      defval: 4
     - name: SourceID
       reprsize: 8
       defval: 6
@@ -56,9 +56,9 @@ has:
   - name: ApplicationData
     reprsize: 2
     defval:
-    - 0xC9
-    - 1 #len
-    - 6 #seq count
+    - 0x05
+    - 0x1D #len
+    - 0x01 #seq count
   - name: Spare
     reprsize: 0
     defval: 0

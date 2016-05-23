@@ -1,5 +1,5 @@
 ---
-name: ScienceUnitMteeOff
+name: ScienceUnitMteeOff(SU_MTEE_OFF)
 has:
 - name: PacketHeader
   has:
@@ -57,6 +57,8 @@ has:
     reprsize: 2
     defval:
     - 0x9C
+    - 1 #len
+    - 5 #seq count
   - name: Spare
     reprsize: 0
     defval: 0

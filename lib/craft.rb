@@ -124,7 +124,11 @@ $crosspacketBlock = Proc.new{ |theHash, level|
   }
 };
 entries = Array.new();
-Dir.chdir( File.dirname(__FILE__).concat("/packets/load/")) { |newDir|  
+load_folder = "/packets/load/";
+if $cmdlnoptions[:loadsource].to_s[0] == '/'
+  dd=3
+end
+Dir.chdir( File.dirname(__FILE__).concat(load_folder)) { |newDir|  
   entries = Dir.glob("**/*.yml")#.reject { |local_file| File.directory?(local_file) }
 }#go back to old dir
 
@@ -138,7 +142,7 @@ entries.each_with_index { |item,index|
   tempAr[0] = index #$telecmdpackets index
   tempAr[1] = item.split("/"); 
   $folders << tempAr;
-  $telecmdpackets << YLoadTelecmdPacketFFile( File.dirname(__FILE__).concat("/packets/load/") , item);
+  $telecmdpackets << YLoadTelecmdPacketFFile( File.dirname(__FILE__).concat(load_folder) , item);
     
 }
 

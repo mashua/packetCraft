@@ -48,8 +48,8 @@ def return_serial_listen_thread( seriaport )
 return slt;
 end
 
-def return_slice_thread( )
-  #fire and forget thread, slices and then terminates.
+def return_slice_thread()
+  #fire and forget thread, slices.
     sliceThr = Thread.new( ) { 
       loop do
 #        $mutex_obj.lock();
@@ -62,9 +62,30 @@ def return_slice_thread( )
 #  sliceThr.run();
 end
 
+def return_udp_slice_thread()
+  #fire and forget thread, slices.
+    sliceThr = Thread.new( ) { 
+      tempA = Array.new();
+      loop do
+#        $mutex_obj.lock();
+          #with 'false' as option, the call blocks until something can be dequeued
+          data = $udp_to_server_q.deq(false);
+          data.to_s.each_byte { |elem|
+              tempA.push( sprintf("%08b",elem).split(//).map{ |elem| elem.to_i } );
+          }
+          tempA.flatten!(1);
+          printECSS( tempA );    
+          tempA.clear;
+#          parseMessage( $udp_to_server_q.deq(false) );
+#        $mutex_obj.unlock();
+      end
+  };
+  return sliceThr;
+#  sliceThr.run();
+end
+
 #Thread that transfers a message from the local TCs queue to the serial line
 def return_local_queue_to_serial_thread()
-  
   to_serialThr = Thread.new() {
     loop do
       #dequeue a TC yaml, convert it to binary stream, and send it over.

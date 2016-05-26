@@ -270,6 +270,7 @@ def SerialTxRawBin( sleep_t, input, array, line, bytestuff )
         i+=stuffed_array.length;
 #        $serialPort.write( bitsToBytes( stuffed_array).pack("C*") );
 #$mutex_obj.lock();
+begin
         if sleep_t == 0
           $serialPort.write( stuffed_array.pack("C*") );
           printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed (on serial port)\n\n");
@@ -278,6 +279,9 @@ def SerialTxRawBin( sleep_t, input, array, line, bytestuff )
           printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed (on serial port)\n\n");
           sleep(sleep_t);
         end
+rescue
+        #catch the no serial error, and suppress it
+end
 #$mutex_obj.unlock();
 #        sleep(0.1);
       }
@@ -288,6 +292,7 @@ def SerialTxRawBin( sleep_t, input, array, line, bytestuff )
         txarray = bitsToBytes( Array.new(elem));
         i+=elem.length;
 #$mutex_obj.lock();if sleep_t == 0
+begin
         if sleep_t == 0
           $serialPort.write( txarray.pack("C*") );
           printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed (on serial port)\n\n");
@@ -296,6 +301,9 @@ def SerialTxRawBin( sleep_t, input, array, line, bytestuff )
           printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed (on serial port)\n\n");
           sleep(sleep_t);
         end
+rescue
+        #catch the no serial error, and suppress it
+end
 #        $serialPort.write( bitsToBytes(elem).pack("C*") );
 #$mutex_obj.unlock();
 #        sleep(1.5);
@@ -314,6 +322,7 @@ def SerialTxRawBin( sleep_t, input, array, line, bytestuff )
 #        $serialPort.write( bitsToBytes( stuffed_array).pack("C*")); 
          print("Serial data Tx: #{stuffed_array}\n")
 #$mutex_obj.lock();
+begin
         if sleep_t == 0
           $serialPort.write( stuffed_array.pack("C*") );
           printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed (on serial port)\n\n");
@@ -322,6 +331,9 @@ def SerialTxRawBin( sleep_t, input, array, line, bytestuff )
           printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed (on serial port)\n\n");
           sleep(sleep_t);
         end
+rescue
+         #catch the no serial error, and suppress it
+end
 #        $serialPort.write( stuffed_array.pack("C*"));
 #$mutex_obj.unlock();
 #        printf("\nTransmission of #{i} bits, (#{i/8} bytes) completed\n");
@@ -330,6 +342,7 @@ def SerialTxRawBin( sleep_t, input, array, line, bytestuff )
         txarray = bitsToBytes( array[(input.to_i)-1]);
         i+=txarray.length;
 #$mutex_obj.lock();
+begin
         if sleep_t == 0
           $serialPort.write( txarray.pack("C*") );
           printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed (on serial port)\n\n");
@@ -338,6 +351,9 @@ def SerialTxRawBin( sleep_t, input, array, line, bytestuff )
           printf("\nTransmission of #{i*8} bits, (#{i} bytes) completed (on serial port)\n\n");
           sleep(sleep_t);
         end
+rescue
+         #catch the no serial error, and suppress it
+end
 #        $serialPort.write( bitsToBytes(txarray).pack("C*"));
 #$mutex_obj.unlock();
 #        printf("\nTransmission of #{i} bits, (#{i/8} bytes}) completed\n");

@@ -1,0 +1,207 @@
+---
+name: ScienceUnitLoadParameters
+has:
+- name: PacketHeader
+  has:
+  - name: PacketID
+    has:
+    - name: VersionNumber
+      reprsize: 3
+      defval: 0
+    - name: Type
+      reprsize: 1
+      defval: 1
+    - name: DataFieldHeaderFlag
+      reprsize: 1
+      defval: 1
+    - name: ApplicationProcessID
+      reprsize: 11
+      defval: 1
+  - name: PacketSequenceControl
+    has:
+    - name: SequenceFlags
+      reprsize: 2
+      defval: 3
+    - name: SequenceCount
+      reprsize: 14
+      defval: 59
+  - name: PacketLength
+    reprsize: 16
+    defval: 66
+- name: PacketDataField
+  has:
+  - name: DataFieldHeader
+    has:
+    - name: CCSDSSecondaryHeaderFlag
+      reprsize: 1
+      defval: 0
+    - name: TC Packet PUS Version Number
+      reprsize: 3
+      defval: 1
+    - name: Ack
+      reprsize: 4
+      defval: 0
+    - name: Service Type
+      reprsize: 8
+      defval: 18
+    - name: Service Subtype
+      reprsize: 8
+      defval: 4
+    - name: SourceID
+      reprsize: 8
+      defval: 6
+    - name: Spare
+      reprsize: 0
+      defval: 0
+  - name: ApplicationData
+    reprsize: 2
+    defval:
+    - 0x05
+    - 0x8D #len
+    - 0x03 #seq count
+    - 0
+    - 0
+    - 0
+    - 0x08
+    - 0
+    - 0x08
+    - 0
+    - 0x08
+    - 0
+    - 0x08
+    - 0
+    - 0
+    - 0
+    - 0
+    - 0xE8
+    - 0x03
+    - 0x10
+    - 0
+    - 0
+    - 0
+    - 0xEA
+    - 0xFE
+    - 0xCC
+    - 0x0C
+    - 0x10
+    - 0x27
+    - 0
+    - 0x08
+    - 0
+    - 0x08
+    - 0
+    - 0xA0
+    - 0x05
+    - 0
+    - 0x0F
+    - 0
+    - 0
+    - 0x40
+    - 0
+    - 0
+    - 0
+    - 0x40
+    - 0
+    - 0
+    - 0
+    - 0x40
+    - 0
+    - 0
+    - 0
+    - 0x40
+    - 0
+    - 0
+    - 0
+    - 0x40
+    - 0
+    - 0
+    - 0
+    - 0x40
+    - 0
+    - 0
+    - 0
+    - 0x40
+    - 0
+    - 0
+    - 0
+    - 0x40
+    - 0
+    - 0
+    - 0
+    - 0x40
+    - 0
+    - 0
+    - 0
+    - 0x40
+    - 0
+    - 0
+    - 0
+    - 0x40
+    - 0
+    - 0
+    - 0
+    - 0x40
+    - 0
+    - 0
+    - 0
+    - 0x40
+    - 0
+    - 0
+    - 0
+    - 0x40
+    - 0
+    - 0
+    - 0
+    - 0x40
+    - 0
+    - 0
+    - 0
+    - 0x40
+    - 0
+    - 0
+    - 0
+    - 0x40
+    - 0
+    - 0
+    - 0
+    - 0x40
+    - 0
+    - 0
+    - 0
+    - 0x40
+    - 0
+    - 0
+    - 0
+    - 0x40
+    - 0
+    - 0
+    - 0
+    - 0x40
+    - 0
+    - 0
+    - 0
+    - 0x40
+    - 0
+    - 0
+    - 0
+    - 0x40
+    - 0
+    - 0
+    - 0
+    - 0x40
+    - 0
+    - 0
+    - 0x51
+    - 0x08
+    - 0x7A
+    - 0x08
+    - 0x01
+    - 0
+    - 0
+    - 0
+  - name: Spare
+    reprsize: 0
+    defval: 0
+  - name: PacketErrorControl
+    reprsize: 16
+    defval: 5

@@ -1,5 +1,5 @@
 ---
-name: TM_SET_TIME_OBC_IN_UTC
+name: SUSchedulerReportStatus
 has:
 - name: PacketHeader
   has:
@@ -24,7 +24,7 @@ has:
       defval: 3
     - name: SequenceCount
       reprsize: 14
-      defval: 60
+      defval: 59
   - name: PacketLength
     reprsize: 16
     defval: 66
@@ -40,13 +40,13 @@ has:
       defval: 1
     - name: Ack
       reprsize: 4
-      defval: 1
+      defval: 0
     - name: Service Type
       reprsize: 8
-      defval: 19
+      defval: 18
     - name: Service Subtype
       reprsize: 8
-      defval: 1
+      defval: 23
     - name: SourceID
       reprsize: 8
       defval: 6
@@ -54,14 +54,9 @@ has:
       reprsize: 0
       defval: 0
   - name: ApplicationData
-    reprsize: 56
+    reprsize: 2
     defval:
-    - 26    #day
-    - 5     #month
-    - 16    #year
-    - 18    #hour
-    - 12    #minute
-    - 0    #seconds
+    - 23
   - name: Spare
     reprsize: 0
     defval: 0

@@ -1,5 +1,5 @@
 ---
-name: ScienceUnitLoadParameters
+name: ScienceUnitLoadParametersWithDataFromE2EtTestsDocument
 has:
 - name: PacketHeader
   has:

@@ -1,5 +1,5 @@
 ---
-name: ScienceUnitPowerOff
+name: SUPowerOff (OBC_SU_OFF)
 has:
 - name: PacketHeader
   has:

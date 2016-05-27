@@ -1,5 +1,5 @@
 ---
-name: ScienceUnitLoadParametersWithNormalDataTakenFromSimulator
+name: SULoadParametersWithNormalDataTakenFromSimulator(SU_LDP)
 has:
 - name: PacketHeader
   has:
@@ -57,7 +57,7 @@ has:
     reprsize: 2
     defval:
     - 0x05
-    - 0x1D #len (is +1 from actual parameters, also +1 for cmd id and seq count )
+    - 0x1D #len (is +1 from actual parameters, also +1 for cmd id and +1 seq count )
     - 0x03 #seq count
     - 0
     - 0

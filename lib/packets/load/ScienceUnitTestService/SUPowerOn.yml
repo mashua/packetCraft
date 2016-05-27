@@ -1,5 +1,5 @@
 ---
-name: ScienceUnitHKReport
+name: SUPowerOn(OBC_SU_ON)
 has:
 - name: PacketHeader
   has:
@@ -46,7 +46,7 @@ has:
       defval: 18
     - name: Service Subtype
       reprsize: 8
-      defval: 13
+      defval: 1
     - name: SourceID
       reprsize: 8
       defval: 6
@@ -56,9 +56,8 @@ has:
   - name: ApplicationData
     reprsize: 2
     defval:
-    - 9
-    - 1
-    - 1
+    - 0xF1
+    - 1 #seq
   - name: Spare
     reprsize: 0
     defval: 0

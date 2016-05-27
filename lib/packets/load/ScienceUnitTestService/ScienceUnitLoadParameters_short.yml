@@ -1,5 +1,5 @@
 ---
-name: ScienceUnitLoadParametersShort
+name: SULoadParametersShort(SU_LDP_short)
 has:
 - name: PacketHeader
   has:

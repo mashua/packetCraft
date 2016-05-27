@@ -1,5 +1,5 @@
 ---
-name: ScienceUnitSTM
+name: SUSTM (SU_STM)
 has:
 - name: PacketHeader
   has:
@@ -58,7 +58,7 @@ has:
     defval:
     - 0xA
     - 1
-    - 5
+    - 0x5
   - name: Spare
     reprsize: 0
     defval: 0

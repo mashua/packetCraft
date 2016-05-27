@@ -1,5 +1,5 @@
 ---
-name: ScienceUnitScienceData(SU_SCI)
+name: SUScienceData (SU_SCI)
 has:
 - name: PacketHeader
   has:

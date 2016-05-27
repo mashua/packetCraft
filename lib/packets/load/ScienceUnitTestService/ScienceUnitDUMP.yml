@@ -1,5 +1,5 @@
 ---
-name: ScienceUnitDUMP
+name: SUDUMP (SU_DUMP)
 has:
 - name: PacketHeader
   has:

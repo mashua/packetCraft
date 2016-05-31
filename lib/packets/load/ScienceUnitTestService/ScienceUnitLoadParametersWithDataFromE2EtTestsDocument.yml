@@ -1,5 +1,5 @@
 ---
-name: SULoadParametersWithDataFromE2EtTestsDocument(SU_LDP)
+name: SULoadParametersWithDataFromE2EtTestsDocument(SU_LDP_FROM_E2E_DOC)
 has:
 - name: PacketHeader
   has:

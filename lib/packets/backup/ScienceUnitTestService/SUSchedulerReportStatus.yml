@@ -1,5 +1,5 @@
 ---
-name: ScienceUnitHealthCheck(SU_HC)
+name: SUSchedulerReportStatus
 has:
 - name: PacketHeader
   has:
@@ -46,7 +46,7 @@ has:
       defval: 18
     - name: Service Subtype
       reprsize: 8
-      defval: 6
+      defval: 23
     - name: SourceID
       reprsize: 8
       defval: 6
@@ -56,9 +56,7 @@ has:
   - name: ApplicationData
     reprsize: 2
     defval:
-    - 0x6
-    - 1 #len
-    - 5 #seq count
+    - 23
   - name: Spare
     reprsize: 0
     defval: 0

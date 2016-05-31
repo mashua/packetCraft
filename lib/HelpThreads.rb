@@ -35,7 +35,7 @@ def return_serial_listen_thread( seriaport )
           end
           if frameseen == 2 #&& counter >=0 && message.length <= (counter -1)
               frameseen = 0;
-              print("\n\n#{message} queued\n")
+#              print("\n\n#{message} queued\n")
 #              $serial_line_queue.enq(  message[0,counter] ); #returns a new sub-array, and puts it into queue
                $serial_to_server_q.enq(  message[0,counter] ); #returns a new sub-array, and puts it into queue
               message.clear;

@@ -1,5 +1,5 @@
 ---
-name: ScienceUnitPowerReset
+name: TM_SET_CURRENT_SYSTEM_TIME_UTC_ON_OBC
 has:
 - name: PacketHeader
   has:
@@ -24,7 +24,7 @@ has:
       defval: 3
     - name: SequenceCount
       reprsize: 14
-      defval: 59
+      defval: 60
   - name: PacketLength
     reprsize: 16
     defval: 66
@@ -40,13 +40,13 @@ has:
       defval: 1
     - name: Ack
       reprsize: 4
-      defval: 0
+      defval: 1
     - name: Service Type
       reprsize: 8
-      defval: 18
+      defval: 19
     - name: Service Subtype
       reprsize: 8
-      defval: 3
+      defval: 1
     - name: SourceID
       reprsize: 8
       defval: 6
@@ -54,11 +54,8 @@ has:
       reprsize: 0
       defval: 0
   - name: ApplicationData
-    reprsize: 2
-    defval:
-    - 0x02
-    - 1 #len
-    - 6 #seq count
+    reprsize: 56
+    defval: ["SYSTEM_TIME_UPDATE"]
   - name: Spare
     reprsize: 0
     defval: 0

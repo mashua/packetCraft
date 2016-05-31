@@ -83,9 +83,7 @@ def ParseOptions()
     }
     
     opts.on("-u", "--udp-tx-addr 'ipv4 address'","\n\tOptional argument."\
-            " The ipv4 address where the packets will be sent (UDP).
-              (This address must be within the local network subnet where packetCraft is running, because
-              UDP packets are not routable.\n")\
+            " The ipv4 address where the packets will be sent (UDP).\n")\
     { |u|
       if u != nil
         $cmdlnoptions[:u]= u; 

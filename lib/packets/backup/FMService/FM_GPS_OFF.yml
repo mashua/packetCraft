@@ -1,5 +1,5 @@
 ---
-name: FM_ADCS_ON_EPS
+name: FM_GPS_OFF ( turn off GPS )
 has:
 - name: PacketHeader
   has:
@@ -56,11 +56,8 @@ has:
   - name: ApplicationData
     reprsize: 40
     defval:
-    - 1
-    - 0
-    - 0
-    - 0
-    - 3
+    - 0 #poff=0
+    - 7 #device id gps
   - name: Spare
     reprsize: 0
     defval: 0

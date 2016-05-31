@@ -1,5 +1,5 @@
 ---
-name: ScienceUnitLoadParametersShort
+name: SUPowerReset(OBC_SU_POWER_RESET)
 has:
 - name: PacketHeader
   has:
@@ -46,7 +46,7 @@ has:
       defval: 18
     - name: Service Subtype
       reprsize: 8
-      defval: 4
+      defval: 3
     - name: SourceID
       reprsize: 8
       defval: 6
@@ -56,9 +56,9 @@ has:
   - name: ApplicationData
     reprsize: 2
     defval:
-    - 0x05
-    - 0x1D #len
-    - 0x01 #seq count
+    - 0x02
+    - 1 #len
+    - 6 #seq count
   - name: Spare
     reprsize: 0
     defval: 0

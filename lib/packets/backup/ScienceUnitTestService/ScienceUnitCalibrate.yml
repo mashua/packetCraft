@@ -1,5 +1,5 @@
 ---
-name: ScienceUnitCalibrate(SU_CAL_CHANNEL_1)
+name: SUCalibrate (SU_CAL_CHANNEL_1)
 has:
 - name: PacketHeader
   has:

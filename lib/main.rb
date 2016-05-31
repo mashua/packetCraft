@@ -49,6 +49,8 @@ require_relative 'CCSDSTCTMServer'
 #require_relative 'testCCSDSClient'
 require_relative 'HelpThreads'
 
+#$received_udp = 0;
+
 $mutex_obj = Mutex.new();
 #$serial_line_queue = Queue.new();
 #$server_queue = Queue.new();

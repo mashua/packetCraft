@@ -1,5 +1,5 @@
 ---
-name: ScienceUnitMteeOff(SU_MTEE_OFF)
+name: SUMteeOff(SU_MTEE_OFF)
 has:
 - name: PacketHeader
   has:

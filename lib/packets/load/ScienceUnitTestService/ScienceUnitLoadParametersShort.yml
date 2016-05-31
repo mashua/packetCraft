@@ -1,5 +1,5 @@
 ---
-name: FM_ACK_ADCS
+name: SULoadParametersShort(SU_LDP_short_DOES_NOT_WORK_ON_REAL_SU)
 has:
 - name: PacketHeader
   has:
@@ -16,7 +16,7 @@ has:
       defval: 1
     - name: ApplicationProcessID
       reprsize: 11
-      defval: 3
+      defval: 1
   - name: PacketSequenceControl
     has:
     - name: SequenceFlags
@@ -24,7 +24,7 @@ has:
       defval: 3
     - name: SequenceCount
       reprsize: 14
-      defval: 60
+      defval: 59
   - name: PacketLength
     reprsize: 16
     defval: 66
@@ -40,13 +40,13 @@ has:
       defval: 1
     - name: Ack
       reprsize: 4
-      defval: 3
+      defval: 0
     - name: Service Type
       reprsize: 8
-      defval: 8
+      defval: 18
     - name: Service Subtype
       reprsize: 8
-      defval: 1
+      defval: 4
     - name: SourceID
       reprsize: 8
       defval: 6
@@ -54,13 +54,11 @@ has:
       reprsize: 0
       defval: 0
   - name: ApplicationData
-    reprsize: 40
+    reprsize: 2
     defval:
-    - 19
-    - 19
-    - 19
-    - 19
-    - 19
+    - 0x05
+    - 0x1D #len
+    - 0x01 #seq count
   - name: Spare
     reprsize: 0
     defval: 0

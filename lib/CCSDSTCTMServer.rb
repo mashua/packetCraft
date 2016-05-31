@@ -23,7 +23,8 @@ class CCSDSTCTMServer
     if $cmdlnoptions[:p]
       @udp_res_socket_p = $cmdlnoptions[:p]
       @udp_res_socket = UDPSocket.new();
-      @udp_res_socket.bind('127.0.0.1', @udp_res_socket_p);
+#      @udp_res_socket.bind('127.0.0.1', @udp_res_socket_p);
+      @udp_res_socket.bind('0.0.0.0', @udp_res_socket_p);#accept from everyone
       @udp_r_t = fire_udp_listener();
     end
   end
@@ -63,11 +64,14 @@ class CCSDSTCTMServer
   #receives responses on udp
   def fire_udp_listener()
     udp_server = Thread.start(){ | client |
+        received_packets_cnt = 0;
         printf("\UDP listening fired up on port: #{@udp_res_socket_p}, awaiting packets...\n");
-#        client = @udp_res_socket.accept();
         loop do
-          data, addr = @udp_res_socket.recvfrom(18);
+          data, addr = @udp_res_socket.recvfrom(2500);
+#          data, addr = @udp_res_socket.recvfrom(65535);
           $udp_to_server_q.enq(data);
+          received_packets_cnt+=1;
+          puts received_packets_cnt; 
         end
       };
             sleep(0.1);

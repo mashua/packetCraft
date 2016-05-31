@@ -1,5 +1,5 @@
 ---
-name: ScienceUnitHK
+name: SUHK (SU_HK)
 has:
 - name: PacketHeader
   has:

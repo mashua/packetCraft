@@ -1,5 +1,5 @@
 ---
-name: ScienceUnitBiasOff(SU_BIAS_OFF)
+name: SUBiasOff (SU_BIAS_OFF)
 has:
 - name: PacketHeader
   has:

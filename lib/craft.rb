@@ -81,19 +81,26 @@ $crosspacketBlock = Proc.new{ |theHash, level|
         $crosspacketBlock.call( innerhash, level );
       }
     elsif key != "name" #no key named has, so parse the repsize and defval into the array.
-                        #sprinf, prints a bitstring
       if theHash['reprsize'] == 0
         #don't add anything
       else
           if theHash['defval'].class == Array
             temp_ar = Array.new();
             if theHash['defval'][0].to_s.include?("/") and theHash['defval'][0].to_s.length > 1
-              #we point a file as TC application data.
+              #then we point a file as TC application data.
               File.open( theHash['defval'][0].to_s, "rb") { |io_obj|
                 io_obj.each_byte { |a_byte|  
                   temp_ar << a_byte;
                 }
               }
+            elsif theHash['defval'][0].to_s == "SYSTEM_TIME_UPDATE"
+              Time.now().utc; #convert system time to UTC, removing time zone info
+              temp_ar << Time.now().utc.day;  
+              temp_ar << Time.now().utc.month;
+              temp_ar << Time.now().utc.year-2000;
+              temp_ar << Time.now().utc.hour;
+              temp_ar << Time.now().utc.min;
+              temp_ar << Time.now().utc.sec;
             else
               theHash['defval'].each { |tempelem|  
                 temp_ar<<tempelem;

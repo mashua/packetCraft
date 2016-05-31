@@ -1,5 +1,5 @@
 ---
-name: FM_ADCS_ON_EPS
+name: FM_RESET_OFF ( reset SU )
 has:
 - name: PacketHeader
   has:
@@ -56,11 +56,8 @@ has:
   - name: ApplicationData
     reprsize: 40
     defval:
-    - 1
-    - 0
-    - 0
-    - 0
-    - 3
+    - 2 #poff=0
+    - 6 #device id su
   - name: Spare
     reprsize: 0
     defval: 0

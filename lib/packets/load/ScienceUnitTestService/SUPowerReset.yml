@@ -1,5 +1,5 @@
 ---
-name: SUPowerReset(SU_RESET)
+name: SUPowerReset(OBC_SU_POWER_RESET)
 has:
 - name: PacketHeader
   has:

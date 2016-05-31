@@ -1,5 +1,5 @@
 ---
-name: FM_ACK_OBC
+name: FM_SU_OFF ( turn off SU )
 has:
 - name: PacketHeader
   has:
@@ -16,7 +16,7 @@ has:
       defval: 1
     - name: ApplicationProcessID
       reprsize: 11
-      defval: 1
+      defval: 2
   - name: PacketSequenceControl
     has:
     - name: SequenceFlags
@@ -40,7 +40,7 @@ has:
       defval: 1
     - name: Ack
       reprsize: 4
-      defval: 3
+      defval: 0
     - name: Service Type
       reprsize: 8
       defval: 8
@@ -56,11 +56,8 @@ has:
   - name: ApplicationData
     reprsize: 40
     defval:
-    - 19
-    - 19
-    - 19
-    - 19
-    - 19
+    - 0 #poff=0
+    - 6 #device id su
   - name: Spare
     reprsize: 0
     defval: 0

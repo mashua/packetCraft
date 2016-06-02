@@ -1,5 +1,5 @@
 ---
-name: TestServicePacket_COMMS
+name: TS02_TestServicePacket_COMMS_to_DBG
 has:
 - name: PacketHeader
   has:

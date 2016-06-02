@@ -536,7 +536,7 @@ def PrintBasicMenu()
   printf("--5.  Display packet titles\n");
   printf("--6.  Transmit the contents of the messages on #{$cmdlnoptions[:udp]?"Serial and UDP":"Serial"} Port\n");
   printf("--7.  Transmit the contents of the messages on #{$cmdlnoptions[:udp]?"Serial and UDP":"Serial"} Port in a Loop\n");
-  printf("--8   Update OBC RTC time with Time.now()\n");
+#  printf("--8   Update OBC RTC time with Time.now()\n");
   printf("Q|q.  To exit program\n");
   printf("type your command input...\n");
 end

@@ -1,5 +1,5 @@
 ---
-name: TestServicePacket_COMMS
+name: MS_SU_LOG_REPORT_OBC
 has:
 - name: PacketHeader
   has:
@@ -16,7 +16,7 @@ has:
       defval: 1
     - name: ApplicationProcessID
       reprsize: 11
-      defval: 4
+      defval: 1
   - name: PacketSequenceControl
     has:
     - name: SequenceFlags
@@ -43,10 +43,10 @@ has:
       defval: 0
     - name: Service Type
       reprsize: 8
-      defval: 17
+      defval: 15
     - name: Service Subtype
       reprsize: 8
-      defval: 1
+      defval: 12
     - name: SourceID
       reprsize: 8
       defval: 7
@@ -54,8 +54,13 @@ has:
       reprsize: 0
       defval: 0
   - name: ApplicationData
-    reprsize: 2
-    defval: []
+    reprsize: 40
+    defval:
+    - 9
+    - 0
+    - 0
+    - 0
+    - 0
   - name: Spare
     reprsize: 0
     defval: 0

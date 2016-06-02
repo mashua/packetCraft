@@ -1,5 +1,5 @@
 ---
-name: TestServicePacket_COMMS
+name: TestServicePacket_ADCS_to_DBG
 has:
 - name: PacketHeader
   has:
@@ -16,7 +16,7 @@ has:
       defval: 1
     - name: ApplicationProcessID
       reprsize: 11
-      defval: 4
+      defval: 3
   - name: PacketSequenceControl
     has:
     - name: SequenceFlags

@@ -1,5 +1,5 @@
 ---
-name: TestServicePacket_COMMS
+name: FM_COMMS_OFF_EPS
 has:
 - name: PacketHeader
   has:
@@ -16,7 +16,7 @@ has:
       defval: 1
     - name: ApplicationProcessID
       reprsize: 11
-      defval: 4
+      defval: 2
   - name: PacketSequenceControl
     has:
     - name: SequenceFlags
@@ -24,7 +24,7 @@ has:
       defval: 3
     - name: SequenceCount
       reprsize: 14
-      defval: 59
+      defval: 60
   - name: PacketLength
     reprsize: 16
     defval: 66
@@ -43,7 +43,7 @@ has:
       defval: 0
     - name: Service Type
       reprsize: 8
-      defval: 17
+      defval: 8
     - name: Service Subtype
       reprsize: 8
       defval: 1
@@ -54,8 +54,10 @@ has:
       reprsize: 0
       defval: 0
   - name: ApplicationData
-    reprsize: 2
-    defval: []
+    reprsize: 40
+    defval:
+    - 0
+    - 4
   - name: Spare
     reprsize: 0
     defval: 0

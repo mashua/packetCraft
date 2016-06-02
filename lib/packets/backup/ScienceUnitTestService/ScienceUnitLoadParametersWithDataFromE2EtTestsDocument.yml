@@ -1,0 +1,207 @@
+---
+name: SULoadParametersWithDataFromE2EtTestsDocument(SU_LDP_FROM_E2E_DOC)
+has:
+- name: PacketHeader
+  has:
+  - name: PacketID
+    has:
+    - name: VersionNumber
+      reprsize: 3
+      defval: 0
+    - name: Type
+      reprsize: 1
+      defval: 1
+    - name: DataFieldHeaderFlag
+      reprsize: 1
+      defval: 1
+    - name: ApplicationProcessID
+      reprsize: 11
+      defval: 1
+  - name: PacketSequenceControl
+    has:
+    - name: SequenceFlags
+      reprsize: 2
+      defval: 3
+    - name: SequenceCount
+      reprsize: 14
+      defval: 59
+  - name: PacketLength
+    reprsize: 16
+    defval: 66
+- name: PacketDataField
+  has:
+  - name: DataFieldHeader
+    has:
+    - name: CCSDSSecondaryHeaderFlag
+      reprsize: 1
+      defval: 0
+    - name: TC Packet PUS Version Number
+      reprsize: 3
+      defval: 1
+    - name: Ack
+      reprsize: 4
+      defval: 0
+    - name: Service Type
+      reprsize: 8
+      defval: 18
+    - name: Service Subtype
+      reprsize: 8
+      defval: 4
+    - name: SourceID
+      reprsize: 8
+      defval: 6
+    - name: Spare
+      reprsize: 0
+      defval: 0
+  - name: ApplicationData
+    reprsize: 2
+    defval:
+    - 0x05
+    - 0x8D #len (is +1 from actual parameters, also +1 for cmd id and +1 seq count )
+    - 0x03 #seq count
+    - 0     
+    - 0     #DAC_bias_man
+    - 0
+    - 0x08  #DAC_1_bias
+    - 0
+    - 0x08  #DAC_2_bias
+    - 0
+    - 0x08  #DAC_3_bias
+    - 0
+    - 0x08  #DAC_4_bias
+    - 0
+    - 0     #agc gain man
+    - 0
+    - 0     #agc_gain
+    - 0xE8  
+    - 0x03  #science_fs
+    - 0x10  
+    - 0     #adc_res
+    - 0
+    - 0     #HK_Fs
+    - 0xEA  
+    - 0xFE  #agc_high
+    - 0xCC
+    - 0x0C  #agc_low
+    - 0x10
+    - 0x27  #agc_timer
+    - 0     
+    - 0x08  #mtee power, low byte ,high byte
+    - 0
+    - 0x08  #mtee manual voltage, low byte ,high byte
+    - 0
+    - 0xA0  #mtee voltage, low byte ,high byte
+    - 0x05
+    - 0     #HK sample time
+    - 0x0F
+    - 0     #STM sample time
+    - 0
+    - 0x40  #Cal A, Chan 1
+    - 0
+    - 0     #Cal B, Chan 1
+    - 0
+    - 0x40  #Cal A, Chan 2
+    - 0
+    - 0     #Cal B, Chan 2
+    - 0
+    - 0x40  #Cal A, Chan 3
+    - 0
+    - 0     #Cal B, Chan 3
+    - 0
+    - 0x40  #Cal A, Chan 4
+    - 0
+    - 0     #Cal B, Chan 4
+    - 0
+    - 0x40
+    - 0
+    - 0
+    - 0
+    - 0x40
+    - 0
+    - 0
+    - 0
+    - 0x40
+    - 0
+    - 0
+    - 0
+    - 0x40
+    - 0
+    - 0     #Cal Constants, gain1
+    - 0
+    - 0x40
+    - 0
+    - 0
+    - 0
+    - 0x40
+    - 0
+    - 0
+    - 0
+    - 0x40
+    - 0
+    - 0
+    - 0
+    - 0x40
+    - 0
+    - 0     #Cal Constants, gain2
+    - 0
+    - 0x40
+    - 0
+    - 0
+    - 0
+    - 0x40
+    - 0
+    - 0
+    - 0
+    - 0x40
+    - 0
+    - 0
+    - 0
+    - 0x40
+    - 0
+    - 0     #Cal Constants, gain3
+    - 0
+    - 0x40
+    - 0
+    - 0
+    - 0
+    - 0x40
+    - 0
+    - 0
+    - 0
+    - 0x40
+    - 0
+    - 0
+    - 0
+    - 0x40
+    - 0
+    - 0     #Cal Constants, gain4
+    - 0
+    - 0x40  #Cal A CH1 bias
+    - 0 
+    - 0     #Cal B CH1 bias
+    - 0
+    - 0x40  #Cal A CH2 bias
+    - 0
+    - 0     #Cal B CH2 bias
+    - 0
+    - 0x40  #Cal A CH3 bias
+    - 0
+    - 0     #Cal B CH3 bias
+    - 0
+    - 0x40  #Cal A CH4 bias
+    - 0
+    - 0     #Cal B CH4 bias
+    - 0x51
+    - 0x08  #pot_High_limit_for_MTEE Auto
+    - 0x7A
+    - 0x08  #pot_Low_limit_for_MTEE Auto
+    - 0x01
+    - 0     #num_pack
+    - 0
+    - 0     #mask
+  - name: Spare
+    reprsize: 0
+    defval: 0
+  - name: PacketErrorControl
+    reprsize: 16
+    defval: 5

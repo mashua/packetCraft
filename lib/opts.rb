@@ -83,9 +83,7 @@ def ParseOptions()
     }
     
     opts.on("-u", "--udp-tx-addr 'ipv4 address'","\n\tOptional argument."\
-            " The ipv4 address where the packets will be sent (UDP).
-              (This address must be within the local network subnet where packetCraft is running, because
-              UDP packets are not routable.\n")\
+            " The ipv4 address where the packets will be sent (UDP).\n")\
     { |u|
       if u != nil
         $cmdlnoptions[:u]= u; 
@@ -101,6 +99,16 @@ def ParseOptions()
         $cmdlnoptions[:i]= i; 
       else
         $cmdlnoptions[:i]= nil;
+     end
+    }
+    
+    opts.on("-p", "--udp-rx-port 'port'","\n\tOptional argument."\
+            " The port number from where UDP packets will be received (UDP).\n")\
+    { |p|
+      if p != nil
+        $cmdlnoptions[:p]= p; 
+      else
+        $cmdlnoptions[:p]= nil;
      end
     }
     
@@ -138,13 +146,16 @@ def ParseOptions()
     
     opts.on("-l", "--load-source 'disk|file'","\n\tMandatory argument. Set from where the packets will be loaded."\
             " \n\t'disk' to load packets from .yml files under #{File.dirname(__FILE__)}/packets/load/ directory. "\
-            " \t'file' to load files from CCSDS_203.0-B-2.rb file."\
+            " \n\t'file' to load files from CCSDS_203.0-B-2.rb file."\
+            " \n\t'/folder realative to /packets/load/' to load packets from inside that folder"\
             " \n\tif you don't specify the option, 'disk' will be used.\n")\
     { |source|
       if source=='disk'
         $cmdlnoptions[:loadsource]= source;        
       elsif source =='file'
-        $cmdlnoptions[:loadsource]= source;        
+        $cmdlnoptions[:loadsource]= source;
+      elsif source[0] == '/'
+        $cmdlnoptions[:loadsource]= source;
       end
     }
     
@@ -216,6 +227,13 @@ def ParseOptions()
     if !$cmdlnoptions.has_key?(:u) && !$cmdlnoptions.has_key?(:i) 
       printf("-- USING DEFAULT: No UDP transmission will be done\n");
     end
+  end
+  
+  if $cmdlnoptions.has_key?(:p)
+    printf("--UDP packets will be received from port number: #{$cmdlnoptions[:p]}\n");
+  else
+    $cmdlnoptions[:p]=nil;
+    printf("-- USING DEFAULT: No reception of UDP packets will be done\n");
   end
   
   if $cmdlnoptions.has_key?(:f)

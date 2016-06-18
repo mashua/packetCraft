@@ -1,0 +1,66 @@
+---
+name: FM_SU_ON_EPS
+has:
+- name: PacketHeader
+  has:
+  - name: PacketID
+    has:
+    - name: VersionNumber
+      reprsize: 3
+      defval: 0
+    - name: Type
+      reprsize: 1
+      defval: 1
+    - name: DataFieldHeaderFlag
+      reprsize: 1
+      defval: 1
+    - name: ApplicationProcessID
+      reprsize: 11
+      defval: 2
+  - name: PacketSequenceControl
+    has:
+    - name: SequenceFlags
+      reprsize: 2
+      defval: 3
+    - name: SequenceCount
+      reprsize: 14
+      defval: 60
+  - name: PacketLength
+    reprsize: 16
+    defval: 66
+- name: PacketDataField
+  has:
+  - name: DataFieldHeader
+    has:
+    - name: CCSDSSecondaryHeaderFlag
+      reprsize: 1
+      defval: 0
+    - name: TC Packet PUS Version Number
+      reprsize: 3
+      defval: 1
+    - name: Ack
+      reprsize: 4
+      defval: 0
+    - name: Service Type
+      reprsize: 8
+      defval: 8
+    - name: Service Subtype
+      reprsize: 8
+      defval: 1
+    - name: SourceID
+      reprsize: 8
+      defval: 7
+    - name: Spare
+      reprsize: 0
+      defval: 0
+  - name: ApplicationData
+    reprsize: 40
+    defval:
+    - 1
+    - 6
+  - name: Spare
+    reprsize: 0
+    defval: 0
+  - name: PacketErrorControl
+    reprsize: 16
+    defval: 5

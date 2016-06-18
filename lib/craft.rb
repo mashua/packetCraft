@@ -88,6 +88,7 @@ $crosspacketBlock = Proc.new{ |theHash, level|
             temp_ar = Array.new();
             if theHash['defval'][0].to_s.include?("/") and theHash['defval'][0].to_s.length > 1
               #then we point a file as TC application data.
+              temp_ar << theHash['defval'][0].to_s.split('/')[-1][/\d+/]#puts as data[0] the script number
               File.open( theHash['defval'][0].to_s, "rb") { |io_obj|
                 io_obj.each_byte { |a_byte|  
                   temp_ar << a_byte;

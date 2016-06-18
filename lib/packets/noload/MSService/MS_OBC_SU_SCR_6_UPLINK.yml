@@ -43,21 +43,19 @@ has:
       defval: 0
     - name: Service Type
       reprsize: 8
-      defval: 13
+      defval: 15
     - name: Service Subtype
       reprsize: 8
-      defval: 18
+      defval: 14
     - name: SourceID
       reprsize: 8
-      defval: 6
+      defval: 7
     - name: Spare
       reprsize: 0
       defval: 0
   - name: ApplicationData
-    reprsize: 888
+    reprsize: 872
     defval:
-    - 0
-    - 0
     - 6
     - 0x6d 
     - 0 

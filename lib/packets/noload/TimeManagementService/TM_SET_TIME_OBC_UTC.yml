@@ -1,5 +1,5 @@
 ---
-name: TM_GET_TIME_OBC_IN_UTC
+name: TM_SET_TIME_OBC_IN_UTC
 has:
 - name: PacketHeader
   has:
@@ -40,13 +40,13 @@ has:
       defval: 1
     - name: Ack
       reprsize: 4
-      defval: 0
+      defval: 1
     - name: Service Type
       reprsize: 8
-      defval: 19
+      defval: 9
     - name: Service Subtype
       reprsize: 8
-      defval: 3
+      defval: 1
     - name: SourceID
       reprsize: 8
       defval: 6
@@ -54,9 +54,14 @@ has:
       reprsize: 0
       defval: 0
   - name: ApplicationData
-    reprsize: 8
+    reprsize: 56
     defval:
-    - 3
+    - 27 #day
+    - 5  #month
+    - 16 #year
+    - 18 #hour
+    - 12 #minute
+    - 0  #seconds
   - name: Spare
     reprsize: 0
     defval: 0

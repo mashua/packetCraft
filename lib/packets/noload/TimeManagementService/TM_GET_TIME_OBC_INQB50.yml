@@ -1,5 +1,5 @@
 ---
-name: TM_SET_TIME_OBC_IN_QB50_EPOCH
+name: TM_GET_TIME_OBC_INQB50_EPOCH
 has:
 - name: PacketHeader
   has:
@@ -40,13 +40,13 @@ has:
       defval: 1
     - name: Ack
       reprsize: 4
-      defval: 1
+      defval: 0
     - name: Service Type
       reprsize: 8
-      defval: 19
+      defval: 9
     - name: Service Subtype
       reprsize: 8
-      defval: 2
+      defval: 4
     - name: SourceID
       reprsize: 8
       defval: 6
@@ -54,10 +54,9 @@ has:
       reprsize: 0
       defval: 0
   - name: ApplicationData
-    reprsize: 56
+    reprsize: 8
     defval:
-    - 2  #SET_DTIME_UTC=1, SET_DTIME_QB50=2
-    - 21 #qb50 epoch (secs from 2000)
+    - 4
   - name: Spare
     reprsize: 0
     defval: 0

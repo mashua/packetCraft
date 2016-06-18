@@ -419,7 +419,6 @@ def byteStuff( theByteArray )
 #FRAME_ESCAPE_H = 0x7D
 #FRAME_ESCAPE_B = 0b01111101
   theByteArray.each_with_index { |elem,index|
-    
     case elem
     when 0x7E #-->5E
       theByteArray[index]=0x5E;
@@ -451,7 +450,6 @@ def byteDestuff( theByteArray )
   theByteArray.delete_at(0);
   theByteArray.pop();
   theByteArray.each_with_index { |elem,index|
-      
     case elem
     when 0x7D
       theByteArray.delete_at(index);

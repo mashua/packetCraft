@@ -227,12 +227,16 @@ def printECSS( theArray)
 #        puts eps_right_dc;
 
         eps_depl_st = application_data[27,1];
+        eps_depl_st_v = eps_depl_st[0];
+        
 #        puts eps_depl_st;
 
         eps_bat_safe_mode = application_data[28,1];
+        eps_bat_safe_mode_v = eps_bat_safe_mode[0];
 #        puts eps_bat_safe_mode;
 
         eps_bat_safe_temp_mode = application_data[29,1];
+        eps_bat_safe_temp_mode_v = eps_bat_safe_temp_mode[0];
 #        puts eps_bat_safe_temp_mode;
         print("\n\nSPECIAL BCC parsing of EXTENDED EPS WOD PACKET\n\n");
 print sprintf("|--time(?)/ticks(?)--|--bat health--|--heater status--|\n");
@@ -259,8 +263,12 @@ print sprintf("|--left volt--|--left curr--|--left dc--|\n");
 print sprintf("|%01$8s|%02$12s|%03$10s|\n",
   eps_l_vol.to_f.to_s.center(13), eps_l_curr.to_f.to_s.center(13), eps_left_dc_v.to_s.center(11));
 print sprintf("|-------------|-------------|-----------|\n");
-      end  
-      
+  
+    puts "Deployment status is: #{eps_depl_st_v}" ;
+    puts "battery safety mode: #{eps_bat_safe_mode_v} ";
+    puts "Temprature safety mode: #{eps_bat_safe_temp_mode_v} ";    
+  end  
+    
 end
 
 def breakECSStoYAML( theArray)

@@ -111,14 +111,131 @@ def printECSS( theArray)
   application_data = bitsToBytes( theArray[80,packet_length]);
 #  application_data = bitsToBytes( theArray[80, theArray.length - 15]);
   checksum = CRC8(theArray, theArray.length-16, theArray.length);
-  #
   print("\n\n");
   print sprintf("|--APID--|--SeqFlags--|--SeqCount--|--Ack--|--SerType--|--SubSerType--|--SourceID--|--ApData--|\n");
   print sprintf("|%01$8s|%02$12s|%03$12s|%04$7s|%05$11s|%06$14s|%07$12s|%08$10s|\n",
     application_process_id.to_s.center(8), sequence_flags.to_s.center(8), sequence_count.to_s.center(8), ack.to_s.center(7), 
     service_type.to_s.center(11), service_subtype.to_s.center(14), source_id.to_s.center(12), application_data.to_s.center(10));
   print sprintf("|--------|------------|------------|-------|-----------|--------------|------------|\n");
-  #
+    
+  if application_process_id == 2 && service_type == 3 && application_data[0] == 2
+        print("\n\nSPECIAL BCC parsing of EXTENDED EPS WOD PACKET\n\n");
+        time_arr = application_data[1,4];
+        time_val = 0b0;
+        time_arr.reverse!.each { |byte|
+          time_val = (time_val|byte) << 8;
+        };
+#        puts time_val.to_s(10);
+
+        bat_health = application_data[5,1];
+#        puts bat_health;
+
+        heater_status = application_data[6,1];
+#        puts heater_status;
+
+        eps_top_volt = application_data[7,2];
+        eps_t_vol = 0b0;
+        eps_top_volt.reverse!.each { |byte| 
+          eps_t_vol = (eps_t_vol|byte) << 8;
+        };
+#        puts eps_t_vol.to_s(10);
+
+        eps_top_curr = application_data[9,2];
+        eps_t_curr = 0b0;
+        eps_top_curr.reverse!.each { |byte| 
+          eps_t_curr = (eps_t_curr|byte) << 8;
+        };
+#        puts eps_t_curr.to_s(10);
+
+        eps_top_dc = application_data[11,1];
+#        puts eps_top_dc;
+
+        eps_bot_volt = application_data[12,2];
+        eps_b_volt = 0b0;
+        eps_bot_volt.reverse!.each { |byte| 
+          eps_b_volt = (eps_b_volt|byte) << 8;
+        };
+#        puts eps_b_volt.to_s(10);
+
+        eps_bot_curr = application_data[14,2];
+        eps_b_curr = 0b0;
+        eps_bot_curr.reverse!.each { |byte| 
+          eps_b_curr = (eps_b_curr|byte) << 8;
+        };
+#        puts eps_b_curr.to_s(10);
+
+        eps_bot_dc = application_data[16,1];
+#        puts eps_bot_dc;
+
+        eps_left_volt = application_data[17,2];
+        eps_l_vol = 0b0;
+        eps_left_volt.reverse!.each { |byte| 
+          eps_l_vol = (eps_l_vol|byte) << 8;
+        };
+#        puts eps_l_vol.to_s(10);
+
+        eps_left_curr = application_data[19,2];
+        eps_l_curr = 0b0;
+        eps_left_curr.reverse!.each { |byte| 
+          eps_l_curr = (eps_l_curr|byte) << 8;
+        };
+#        puts eps_l_curr.to_s(10);
+
+        eps_left_dc = application_data[21,1];
+#        puts eps_left_dc;
+
+        eps_right_volt = application_data[22,2];
+        eps_r_vol = 0b0;
+        eps_right_volt.reverse!.each { |byte| 
+          eps_r_vol = (eps_r_vol|byte) << 8;
+        };
+#        puts eps_r_vol.to_s(10);
+
+        eps_right_curr = application_data[24,2];
+        eps_r_curr = 0b0;
+        eps_right_curr.reverse!.each { |byte| 
+          eps_r_curr = (eps_r_curr|byte) << 8;
+        };
+#        puts eps_r_curr.to_s(10);
+
+        eps_right_dc = application_data[26,1];
+#        puts eps_right_dc;
+
+        eps_depl_st = application_data[27,1];
+#        puts eps_depl_st;
+
+        eps_bat_safe_mode = application_data[28,1];
+#        puts eps_bat_safe_mode;
+
+        eps_bat_safe_temp_mode = application_data[29,1];
+#        puts eps_bat_safe_temp_mode;
+        print("\n\nSPECIAL BCC parsing of EXTENDED EPS WOD PACKET\n\n");
+print sprintf("|--time(?)/ticks(?)--|--bat health--|--heater status--|\n");
+print sprintf("|%01$8s|%02$12s|%03$12s|\n",
+    time_val.to_s.center(20), bat_health.to_s.center(14), heater_status[0].to_s.center(17));
+print sprintf("|--------------------|--------------|-----------------|\n");
+
+print sprintf("|--top volt--|--top curr--|--top dc--|\n");
+print sprintf("|%01$8s|%02$12s|%03$10s|\n",
+    eps_t_vol.to_s.center(12), eps_t_curr.to_s.center(8), eps_top_dc[0].to_s.center(8));
+print sprintf("|------------|------------|----------|\n");
+
+print sprintf("|--bot volt--|--bot curr--|--bot dc--|\n");
+print sprintf("|%01$8s|%02$12s|%03$10s|\n",
+  eps_b_volt.to_s.center(12), eps_b_curr.to_s.center(8), eps_bot_dc[0].to_s.center(8));
+print sprintf("|------------|------------|----------|\n");
+
+print sprintf("|--right volt--|--right curr--|--right dc--|\n");
+print sprintf("|%01$8s|%02$12s|%03$10s|\n",
+  eps_r_vol.to_s.center(14), eps_r_curr.to_s.center(14), eps_right_dc[0].to_s.center(12));
+print sprintf("|--------------|--------------|------------|\n");
+
+print sprintf("|--left volt--|--left curr--|--left dc--|\n");
+print sprintf("|%01$8s|%02$12s|%03$10s|\n",
+  eps_l_vol.to_s.center(13), eps_l_curr.to_s.center(13), eps_left_dc[0].to_s.center(11));
+print sprintf("|-------------|-------------|-----------|\n");
+      end  
+      
 end
 
 def breakECSStoYAML( theArray)

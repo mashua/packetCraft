@@ -1,5 +1,5 @@
 ---
-name: TM_SET_TIME_OBC_IN_UTC
+name: HK_WOD_EX_EPS
 has:
 - name: PacketHeader
   has:
@@ -16,7 +16,7 @@ has:
       defval: 1
     - name: ApplicationProcessID
       reprsize: 11
-      defval: 1
+      defval: 2
   - name: PacketSequenceControl
     has:
     - name: SequenceFlags
@@ -40,28 +40,23 @@ has:
       defval: 1
     - name: Ack
       reprsize: 4
-      defval: 1
+      defval: 0
     - name: Service Type
       reprsize: 8
-      defval: 9
+      defval: 3
     - name: Service Subtype
       reprsize: 8
-      defval: 1
+      defval: 21
     - name: SourceID
       reprsize: 8
-      defval: 6
+      defval: 7
     - name: Spare
       reprsize: 0
       defval: 0
   - name: ApplicationData
-    reprsize: 56
+    reprsize: 8
     defval:
-    - 19 #day
-    - 6  #month
-    - 16 #year
-    - 11 #hour
-    - 55 #minute
-    - 0  #seconds
+    - 2
   - name: Spare
     reprsize: 0
     defval: 0

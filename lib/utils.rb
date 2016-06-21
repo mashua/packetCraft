@@ -135,70 +135,95 @@ def printECSS( theArray)
 
         eps_top_volt = application_data[7,2];
         eps_t_vol = 0b0;
-        eps_top_volt.reverse!.each { |byte| 
-          eps_t_vol = (eps_t_vol|byte) << 8;
-        };
+#        eps_top_volt.reverse!.each { |byte| 
+#          eps_t_vol = (eps_t_vol|byte) << 8;
+#        };
+        eps_t_vol = (application_data[7])|(application_data[8])<<8;
+        eps_t_vol = eps_t_vol.to_f / 620;
 #        puts eps_t_vol.to_s(10);
 
         eps_top_curr = application_data[9,2];
         eps_t_curr = 0b0;
-        eps_top_curr.reverse!.each { |byte| 
-          eps_t_curr = (eps_t_curr|byte) << 8;
-        };
+        eps_t_curr = (application_data[9])|(application_data[10])<<8
+        eps_t_curr = eps_t_curr.to_f / 3474;
+#        eps_top_curr.reverse!.each { |byte| 
+#          eps_t_curr = (eps_t_curr|byte) << 8;
+#        };
+        eps_t_curr = eps_t_curr.to_f / 3474;
 #        puts eps_t_curr.to_s(10);
 
         eps_top_dc = application_data[11,1];
+        eps_top_dc_v = eps_top_dc[0];
+        eps_top_dc_v = (eps_top_dc_v.to_f/160)*100
 #        puts eps_top_dc;
 
         eps_bot_volt = application_data[12,2];
         eps_b_volt = 0b0;
-        eps_bot_volt.reverse!.each { |byte| 
-          eps_b_volt = (eps_b_volt|byte) << 8;
-        };
+        eps_b_vol = (application_data[12])|(application_data[13])<<8;
+        eps_b_vol = eps_b_vol.to_f / 620;
+#        eps_bot_volt.reverse!.each { |byte| 
+#          eps_b_volt = (eps_b_volt|byte) << 8;
+#        };
 #        puts eps_b_volt.to_s(10);
 
         eps_bot_curr = application_data[14,2];
         eps_b_curr = 0b0;
-        eps_bot_curr.reverse!.each { |byte| 
-          eps_b_curr = (eps_b_curr|byte) << 8;
-        };
+        eps_b_curr = (application_data[14])|(application_data[15])<<8
+        eps_b_curr = eps_b_curr.to_f / 3474;
+#        eps_bot_curr.reverse!.each { |byte| 
+#          eps_b_curr = (eps_b_curr|byte) << 8;
+#        };
 #        puts eps_b_curr.to_s(10);
 
         eps_bot_dc = application_data[16,1];
+        eps_bot_dc_v = eps_bot_dc[0];
+        eps_bot_dc_v = (eps_bot_dc_v.to_f/160)*100
 #        puts eps_bot_dc;
 
         eps_left_volt = application_data[17,2];
         eps_l_vol = 0b0;
-        eps_left_volt.reverse!.each { |byte| 
-          eps_l_vol = (eps_l_vol|byte) << 8;
-        };
+        eps_l_vol = (application_data[17])|(application_data[18])<<8;
+        eps_l_vol = eps_l_vol.to_f / 620;
+#        eps_left_volt.reverse!.each { |byte| 
+#          eps_l_vol = (eps_l_vol|byte) << 8;
+#        };
 #        puts eps_l_vol.to_s(10);
 
         eps_left_curr = application_data[19,2];
         eps_l_curr = 0b0;
-        eps_left_curr.reverse!.each { |byte| 
-          eps_l_curr = (eps_l_curr|byte) << 8;
-        };
+        eps_l_curr = (application_data[19])|(application_data[20])<<8
+        eps_l_curr = eps_l_curr.to_f / 3474;
+#        eps_left_curr.reverse!.each { |byte| 
+#          eps_l_curr = (eps_l_curr|byte) << 8;
+#        };
 #        puts eps_l_curr.to_s(10);
 
         eps_left_dc = application_data[21,1];
+        eps_left_dc_v = eps_left_dc[0];
+        eps_left_dc_v = (eps_left_dc_v.to_f/160)*100
 #        puts eps_left_dc;
 
         eps_right_volt = application_data[22,2];
         eps_r_vol = 0b0;
-        eps_right_volt.reverse!.each { |byte| 
-          eps_r_vol = (eps_r_vol|byte) << 8;
-        };
+        eps_r_vol = (application_data[22])|(application_data[23])<<8;
+        eps_r_vol = eps_r_vol.to_f / 620;
+#        eps_right_volt.reverse!.each { |byte| 
+#          eps_r_vol = (eps_r_vol|byte) << 8;
+#        };
 #        puts eps_r_vol.to_s(10);
 
         eps_right_curr = application_data[24,2];
         eps_r_curr = 0b0;
-        eps_right_curr.reverse!.each { |byte| 
-          eps_r_curr = (eps_r_curr|byte) << 8;
-        };
+        eps_r_curr = (application_data[24])|(application_data[25])<<8
+        eps_r_curr = eps_r_curr.to_f / 3474;
+#        eps_right_curr.reverse!.each { |byte| 
+#          eps_r_curr = (eps_r_curr|byte) << 8;
+#        };
 #        puts eps_r_curr.to_s(10);
 
         eps_right_dc = application_data[26,1];
+        eps_right_dc_v = eps_right_dc[0];
+        eps_right_dc_v = (eps_right_dc_v.to_f/160)*100
 #        puts eps_right_dc;
 
         eps_depl_st = application_data[27,1];
@@ -217,22 +242,22 @@ print sprintf("|--------------------|--------------|-----------------|\n");
 
 print sprintf("|--top volt--|--top curr--|--top dc--|\n");
 print sprintf("|%01$8s|%02$12s|%03$10s|\n",
-    eps_t_vol.to_s.center(12), eps_t_curr.to_s.center(8), eps_top_dc[0].to_s.center(8));
+    eps_t_vol.to_f.to_s.center(12), eps_t_curr.to_f.to_s.center(8), eps_top_dc_v.to_s.center(8));
 print sprintf("|------------|------------|----------|\n");
 
 print sprintf("|--bot volt--|--bot curr--|--bot dc--|\n");
 print sprintf("|%01$8s|%02$12s|%03$10s|\n",
-  eps_b_volt.to_s.center(12), eps_b_curr.to_s.center(8), eps_bot_dc[0].to_s.center(8));
+  eps_b_volt.to_f.to_s.center(12), eps_b_curr.to_f.to_s.center(8), eps_bot_dc_v.to_s.center(8));
 print sprintf("|------------|------------|----------|\n");
 
 print sprintf("|--right volt--|--right curr--|--right dc--|\n");
 print sprintf("|%01$8s|%02$12s|%03$10s|\n",
-  eps_r_vol.to_s.center(14), eps_r_curr.to_s.center(14), eps_right_dc[0].to_s.center(12));
+  eps_r_vol.to_f.to_s.center(14), eps_r_curr.to_f.to_s.center(14), eps_right_dc_v.to_s.center(12));
 print sprintf("|--------------|--------------|------------|\n");
 
 print sprintf("|--left volt--|--left curr--|--left dc--|\n");
 print sprintf("|%01$8s|%02$12s|%03$10s|\n",
-  eps_l_vol.to_s.center(13), eps_l_curr.to_s.center(13), eps_left_dc[0].to_s.center(11));
+  eps_l_vol.to_f.to_s.center(13), eps_l_curr.to_f.to_s.center(13), eps_left_dc_v.to_s.center(11));
 print sprintf("|-------------|-------------|-----------|\n");
       end  
       

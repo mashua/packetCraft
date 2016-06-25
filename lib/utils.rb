@@ -244,28 +244,28 @@ print sprintf("|%01$8s|%02$12s|%03$12s|\n",
     time_val.to_s.center(20), bat_health.to_s.center(14), heater_status[0].to_s.center(17));
 print sprintf("|--------------------|--------------|-----------------|\n");
 
-print sprintf("|--top volt--|--top curr--|--top dc--|\n");
+print sprintf("|--Y+ Volt--|--Y+ Curr--|--Y+ DC--|\n");
 print sprintf("|%01$8s|%02$12s|%03$10s|\n",
     eps_t_vol.to_f.to_s.center(12), eps_t_curr.to_f.to_s.center(8), eps_top_dc_v.to_s.center(8));
 print sprintf("|------------|------------|----------|\n");
 
-print sprintf("|--bot volt--|--bot curr--|--bot dc--|\n");
+print sprintf("|--Y- Volt--|--Y- Current--|--Y- DC--|\n");
 print sprintf("|%01$8s|%02$12s|%03$10s|\n",
   eps_b_volt.to_f.to_s.center(12), eps_b_curr.to_f.to_s.center(8), eps_bot_dc_v.to_s.center(8));
 print sprintf("|------------|------------|----------|\n");
 
-print sprintf("|--right volt--|--right curr--|--right dc--|\n");
+print sprintf("|--X- Volt--|--X- Current--|--X- DC--|\n");
 print sprintf("|%01$8s|%02$12s|%03$10s|\n",
   eps_r_vol.to_f.to_s.center(14), eps_r_curr.to_f.to_s.center(14), eps_right_dc_v.to_s.center(12));
 print sprintf("|--------------|--------------|------------|\n");
 
-print sprintf("|--left volt--|--left curr--|--left dc--|\n");
+print sprintf("|--X+ Volt--|--X+ Current--|--X+ DC--|\n");
 print sprintf("|%01$8s|%02$12s|%03$10s|\n",
   eps_l_vol.to_f.to_s.center(13), eps_l_curr.to_f.to_s.center(13), eps_left_dc_v.to_s.center(11));
 print sprintf("|-------------|-------------|-----------|\n");
   
     puts "Deployment status is: #{eps_depl_st_v}" ;
-    puts "battery safety mode: #{eps_bat_safe_mode_v} ";
+    puts "Battery safety mode: #{eps_bat_safe_mode_v} ";
     puts "Temprature safety mode: #{eps_bat_safe_temp_mode_v} ";    
   end  
     

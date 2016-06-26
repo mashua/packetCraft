@@ -1,5 +1,5 @@
 ---
-name: TM_GET_TIME_OBC_INQB50_EPOCH
+name: TS02_TestServicePacket_COMMS_to_DBG
 has:
 - name: PacketHeader
   has:
@@ -16,7 +16,7 @@ has:
       defval: 1
     - name: ApplicationProcessID
       reprsize: 11
-      defval: 1
+      defval: 4
   - name: PacketSequenceControl
     has:
     - name: SequenceFlags
@@ -24,7 +24,7 @@ has:
       defval: 3
     - name: SequenceCount
       reprsize: 14
-      defval: 60
+      defval: 59
   - name: PacketLength
     reprsize: 16
     defval: 66
@@ -43,20 +43,19 @@ has:
       defval: 0
     - name: Service Type
       reprsize: 8
-      defval: 9
+      defval: 17
     - name: Service Subtype
       reprsize: 8
-      defval: 4
+      defval: 1
     - name: SourceID
       reprsize: 8
-      defval: 6
+      defval: 7
     - name: Spare
       reprsize: 0
       defval: 0
   - name: ApplicationData
-    reprsize: 8
-    defval:
-    - 4
+    reprsize: 2
+    defval: []
   - name: Spare
     reprsize: 0
     defval: 0

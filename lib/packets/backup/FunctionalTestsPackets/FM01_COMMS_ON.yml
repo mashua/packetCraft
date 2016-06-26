@@ -1,5 +1,5 @@
 ---
-name: TM_GET_TIME_OBC_INQB50_EPOCH
+name: FM_COMMS_ON_EPS
 has:
 - name: PacketHeader
   has:
@@ -16,7 +16,7 @@ has:
       defval: 1
     - name: ApplicationProcessID
       reprsize: 11
-      defval: 1
+      defval: 2
   - name: PacketSequenceControl
     has:
     - name: SequenceFlags
@@ -43,19 +43,20 @@ has:
       defval: 0
     - name: Service Type
       reprsize: 8
-      defval: 9
+      defval: 8
     - name: Service Subtype
       reprsize: 8
-      defval: 4
+      defval: 1
     - name: SourceID
       reprsize: 8
-      defval: 6
+      defval: 7
     - name: Spare
       reprsize: 0
       defval: 0
   - name: ApplicationData
-    reprsize: 8
+    reprsize: 40
     defval:
+    - 1
     - 4
   - name: Spare
     reprsize: 0

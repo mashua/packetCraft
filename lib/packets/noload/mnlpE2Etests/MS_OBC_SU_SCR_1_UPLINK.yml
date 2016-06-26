@@ -1,5 +1,5 @@
 ---
-name: TM_GET_TIME_OBC_INQB50_EPOCH
+name: LD_UPLINK_SU_SCR_1_OBC
 has:
 - name: PacketHeader
   has:
@@ -24,7 +24,7 @@ has:
       defval: 3
     - name: SequenceCount
       reprsize: 14
-      defval: 60
+      defval: 59
   - name: PacketLength
     reprsize: 16
     defval: 66
@@ -43,20 +43,19 @@ has:
       defval: 0
     - name: Service Type
       reprsize: 8
-      defval: 9
+      defval: 15
     - name: Service Subtype
       reprsize: 8
-      defval: 4
+      defval: 14
     - name: SourceID
       reprsize: 8
-      defval: 6
+      defval: 7
     - name: Spare
       reprsize: 0
       defval: 0
   - name: ApplicationData
-    reprsize: 8
-    defval:
-    - 4
+    reprsize: 872
+    defval: [/home/mashua/cubesat_firmware/mNLP_datapack_v3/upsat-scipt-tests/E2E/output/renamed/SCR1.bin] 
   - name: Spare
     reprsize: 0
     defval: 0

@@ -1,5 +1,5 @@
 ---
-name: TM_GET_TIME_OBC_INQB50_EPOCH
+name: HK_GET_TIME_OBC
 has:
 - name: PacketHeader
   has:
@@ -43,10 +43,10 @@ has:
       defval: 0
     - name: Service Type
       reprsize: 8
-      defval: 9
+      defval: 3
     - name: Service Subtype
       reprsize: 8
-      defval: 4
+      defval: 21
     - name: SourceID
       reprsize: 8
       defval: 6
@@ -56,7 +56,7 @@ has:
   - name: ApplicationData
     reprsize: 8
     defval:
-    - 4
+    - 2
   - name: Spare
     reprsize: 0
     defval: 0

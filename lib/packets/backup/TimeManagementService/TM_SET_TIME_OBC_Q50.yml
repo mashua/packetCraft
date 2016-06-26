@@ -43,7 +43,7 @@ has:
       defval: 1
     - name: Service Type
       reprsize: 8
-      defval: 19
+      defval: 9
     - name: Service Subtype
       reprsize: 8
       defval: 2

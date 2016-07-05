@@ -1,5 +1,5 @@
 ---
-name: TM_GET_TIME_OBC_INQB50_EPOCH
+name: SchedulePacketOBCTestServiceQB50Epoch
 has:
 - name: PacketHeader
   has:
@@ -24,7 +24,7 @@ has:
       defval: 3
     - name: SequenceCount
       reprsize: 14
-      defval: 60
+      defval: 57
   - name: PacketLength
     reprsize: 16
     defval: 66
@@ -43,20 +43,43 @@ has:
       defval: 0
     - name: Service Type
       reprsize: 8
-      defval: 9
+      defval: 11
     - name: Service Subtype
       reprsize: 8
       defval: 4
     - name: SourceID
       reprsize: 8
-      defval: 7
+      defval: 6
     - name: Spare
       reprsize: 0
       defval: 0
   - name: ApplicationData
-    reprsize: 8
+    reprsize: 232
     defval:
-    - 4
+    - 1
+    - 1
+    - 0
+    - 0
+    - 1
+    - 4 #4=qb50 epoch, 0=absolute
+    - 250 #timeb0
+    - 250 #timeb1
+    - 200 #timeb2
+    - 25 #timeb3
+    - 0 #exectimeoutb0
+    - 33 #exectimeoutb1
+    - 24 #tc packet begins here
+    - 1
+    - 192
+    - 59
+    - 0
+    - 5
+    - 16
+    - 17
+    - 1
+    - 7
+    - 0
+    - 224
   - name: Spare
     reprsize: 0
     defval: 0

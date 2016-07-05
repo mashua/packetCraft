@@ -96,6 +96,7 @@ $crosspacketBlock = Proc.new{ |theHash, level|
               }
             elsif theHash['defval'][0].to_s == "SYSTEM_TIME_UPDATE"
               Time.now().utc; #convert system time to UTC, removing time zone info
+              temp_ar << Time.now().utc.wday #not compatible with hal rtc lib.
               temp_ar << Time.now().utc.day;  
               temp_ar << Time.now().utc.month;
               temp_ar << Time.now().utc.year-2000;

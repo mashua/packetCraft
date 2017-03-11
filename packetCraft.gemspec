@@ -8,9 +8,12 @@ Gem::Specification.new do |spec|
   spec.version       = PacketCraft::VERSION
   spec.authors       = ["Apostolos D. Masiakos"]
   spec.email         = ["amasiakos@gmail.com"]
-
-  spec.summary       = %q{TODO: Write a short summary, because Rubygems requires one.}
-#  spec.description   = %q{TODO: Write a longer description or delete this line.}
+  spec.license       = "GPL-3.0"
+  spec.summary       = "A tool to aid in packet creation for various purposes"
+  spec.description   = <<-EOF
+                       packetCraft is a tool to create various packets in need. The packets are
+                       generated from .yml files.
+                       EOF
   spec.homepage      = "https://github.com/mashua/packetCraft"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
@@ -22,9 +25,10 @@ Gem::Specification.new do |spec|
       "public gem pushes."
   end
 
-  spec.files         = `git ls-files -z`.split("\x0").reject do |f|
-    f.match(%r{^(test|spec|features)/})
-  end
+  spec.files = Dir.glob("**/**/**")
+#  spec.files         = `git ls-files -z`.split("\x0").reject do |f|
+#    f.match(%r{^(test|spec|features)/})
+#  end
   spec.bindir        = "exe"
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
